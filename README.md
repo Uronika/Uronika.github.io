@@ -117,3 +117,4 @@ Playwright 优先复用 `C:\Users\Mavis\AppData\Local\ms-playwright` 中的 Chro
 | 2026-06-20 16:25:18 | `.gitignore`、`.env.example`、`package.json`、`pnpm-lock.yaml`、`astro.config.mjs`、`tsconfig.json`、`playwright.config.ts`、`README.md` | 初始化本地 Git main 分支和 Astro + TypeScript + pnpm 工程骨架，配置生成物忽略规则与验证入口。 |
 | 2026-06-20 16:25:18 | `src/`、`public/`、`scripts/`、`tests/e2e/`、`.github/workflows/`、`README.md` | 完成深色暖光个人网站首版、六个明确占位作品、GitHub 回退同步、OG/PDF 生成、SEO、Pages 部署和桌面/移动 E2E。 |
 | 2026-06-20 16:30:40 | `README.md` | 记录首次 GitHub 发布准备，目标为公开用户主页仓库 `Uronika/Uronika.github.io` 的 `main` 分支。 |
+| 2026-06-20 16:35:40 | `scripts/generate-resume-pdf.mjs`、`README.md` | 修复 Linux CI 下 Astro CLI 的跨平台定位，并使用随机预览端口避免残留进程掩盖 PDF 构建失败。 |

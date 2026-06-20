@@ -2,13 +2,15 @@ import { spawn } from "node:child_process";
 import { existsSync, readdirSync } from "node:fs";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { chromium } from "@playwright/test";
 
 const root = process.cwd();
 const outputPath = path.join(root, "dist", "resume.pdf");
-const port = 4322;
+const port = 4400 + Math.floor(Math.random() * 500);
 const url = `http://127.0.0.1:${port}/resume/`;
-const astroCli = path.join(root, "node_modules", "astro", "astro.js");
+const astroPackageUrl = import.meta.resolve("astro/package.json");
+const astroCli = fileURLToPath(new URL("./bin/astro.mjs", astroPackageUrl));
 const server = spawn(process.execPath, [astroCli, "preview", "--host", "127.0.0.1", "--port", String(port)], {
   cwd: root,
   env: process.env,
