@@ -195,7 +195,6 @@ h3 {
 
   html.home-snap .home-section {
     min-height: 100svh;
-    scroll-margin-top: 92px;
     scroll-snap-align: start;
     scroll-snap-stop: normal;
   }

@@ -55,26 +55,77 @@ test("desktop home uses five snap sections and an active section navigator", asy
   await expect(page.locator('[data-section-link="contact"]')).toHaveAttribute("aria-current", "step");
 });
 
-test("desktop hero collage is enlarged, overlaps the copy, and stays behind text", async ({ page }, testInfo) => {
+test("desktop hero uses a full-screen curtain, wall light, and enlarged composition", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name.includes("mobile"), "Desktop-only collage composition");
   await page.goto("/");
 
   const composition = await page.evaluate(() => {
+    const hero = document.querySelector<HTMLElement>("#home")!;
     const copy = document.querySelector<HTMLElement>(".hero-copy")!;
     const collage = document.querySelector<HTMLElement>("[data-parallax-root]")!;
+    const title = hero.querySelector<HTMLElement>("h1")!;
+    const capabilities = document.querySelector<HTMLElement>("#capabilities")!;
     const copyBox = copy.getBoundingClientRect();
     const collageBox = collage.getBoundingClientRect();
+    const curtain = getComputedStyle(hero, "::after");
+    const spotlight = getComputedStyle(hero, "::before");
+    const sectionLight = getComputedStyle(capabilities, "::after");
     return {
       collageWidth: collageBox.width,
       overlap: copyBox.right - collageBox.left,
       copyZ: Number(getComputedStyle(copy).zIndex),
-      collageZ: Number(getComputedStyle(collage).zIndex)
+      collageZ: Number(getComputedStyle(collage).zIndex),
+      titleFontSize: Number.parseFloat(getComputedStyle(title).fontSize),
+      curtainWidth: Number.parseFloat(curtain.width),
+      curtainHeight: Number.parseFloat(curtain.height),
+      curtainZ: Number(curtain.zIndex),
+      curtainBackground: curtain.backgroundImage,
+      spotlightBackground: spotlight.backgroundImage,
+      sectionLightBackground: sectionLight.backgroundImage,
+      viewportWidth: window.innerWidth,
+      viewportHeight: window.innerHeight
     };
   });
 
-  expect(composition.collageWidth).toBeGreaterThan(800);
+  expect(composition.collageWidth).toBeGreaterThan(1_000);
   expect(composition.overlap).toBeGreaterThan(100);
+  expect(composition.titleFontSize).toBeGreaterThan(90);
+  expect(composition.curtainWidth).toBeGreaterThanOrEqual(composition.viewportWidth - 1);
+  expect(composition.curtainHeight).toBeGreaterThanOrEqual(composition.viewportHeight - 1);
+  expect(composition.curtainBackground).toContain("linear-gradient");
+  expect(composition.spotlightBackground).toContain("radial-gradient");
+  expect(composition.spotlightBackground).toContain("conic-gradient");
+  expect(composition.sectionLightBackground).toContain("radial-gradient");
+  expect(composition.curtainZ).toBeGreaterThan(composition.collageZ);
   expect(composition.copyZ).toBeGreaterThan(composition.collageZ);
+  expect(composition.copyZ).toBeGreaterThan(composition.curtainZ);
+});
+
+test("desktop wheel gesture pages symmetrically between hero and capabilities", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name.includes("mobile"), "Desktop-only hero paging");
+  await page.goto("/");
+
+  await page.mouse.move(720, 450);
+  await page.mouse.wheel(0, 120);
+
+  await expect
+    .poll(async () => {
+      const box = await page.locator("#capabilities").boundingBox();
+      return box?.y ?? Number.POSITIVE_INFINITY;
+    })
+    .toBeLessThan(150);
+  await expect(page.locator('[data-section-link="capabilities"]')).toHaveAttribute("aria-current", "step");
+
+  await page.waitForTimeout(900);
+  await page.mouse.wheel(0, -120);
+
+  await expect
+    .poll(async () => {
+      const box = await page.locator("#home").boundingBox();
+      return Math.abs(box?.y ?? Number.POSITIVE_INFINITY);
+    })
+    .toBeLessThan(12);
+  await expect(page.locator('[data-section-link="home"]')).toHaveAttribute("aria-current", "step");
 });
 
 test("mobile home keeps natural scrolling and the existing compact collage", async ({ page }, testInfo) => {
@@ -88,6 +139,19 @@ test("mobile home keeps natural scrolling and the existing compact collage", asy
   const collage = await page.locator("[data-parallax-root]").boundingBox();
   expect(collage).not.toBeNull();
   expect(collage!.width).toBeLessThanOrEqual(390);
+
+  const mobileHero = await page.evaluate(() => {
+    const hero = document.querySelector<HTMLElement>("#home")!;
+    const title = hero.querySelector<HTMLElement>("h1")!;
+    return {
+      titleFontSize: Number.parseFloat(getComputedStyle(title).fontSize),
+      curtainDisplay: getComputedStyle(hero, "::after").display,
+      spotlightOpacity: Number.parseFloat(getComputedStyle(hero, "::before").opacity)
+    };
+  });
+  expect(mobileHero.titleFontSize).toBeLessThanOrEqual(68);
+  expect(mobileHero.curtainDisplay).toBe("none");
+  expect(mobileHero.spotlightOpacity).toBeLessThanOrEqual(0.5);
 });
 
 test("contact replaces the account index and retains account details", async ({ page }) => {

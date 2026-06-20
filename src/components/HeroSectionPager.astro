@@ -1,0 +1,89 @@
+<script>
+  const desktopMotion = window.matchMedia("(min-width: 981px) and (prefers-reduced-motion: no-preference)");
+  const hero = document.querySelector<HTMLElement>("#home[data-home-section]");
+  const capabilities = document.querySelector<HTMLElement>("#capabilities[data-home-section]");
+
+  const threshold = 48;
+  const idleDelay = 180;
+  const transitionLock = 850;
+  const sectionOffset = 92;
+  const boundaryTolerance = 120;
+
+  let accumulatedDelta = 0;
+  let accumulatedDirection = 0;
+  let lastWheelAt = 0;
+  let lockedUntil = 0;
+  let awaitingIdle = false;
+
+  const normalizedDelta = (event: WheelEvent) => {
+    if (event.deltaMode === WheelEvent.DOM_DELTA_LINE) return event.deltaY * 16;
+    if (event.deltaMode === WheelEvent.DOM_DELTA_PAGE) return event.deltaY * window.innerHeight;
+    return event.deltaY;
+  };
+
+  const resetInput = () => {
+    accumulatedDelta = 0;
+    accumulatedDirection = 0;
+  };
+
+  const moveTo = (target: HTMLElement, now: number) => {
+    resetInput();
+    awaitingIdle = true;
+    lockedUntil = now + transitionLock;
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const handleWheel = (event: WheelEvent) => {
+    if (!desktopMotion.matches || !hero || !capabilities || event.ctrlKey) return;
+
+    const delta = normalizedDelta(event);
+    if (delta === 0 || Math.abs(delta) <= Math.abs(event.deltaX)) return;
+
+    const now = performance.now();
+    const timeSinceLastWheel = lastWheelAt ? now - lastWheelAt : Number.POSITIVE_INFINITY;
+    lastWheelAt = now;
+
+    if (awaitingIdle) {
+      if (now >= lockedUntil && timeSinceLastWheel >= idleDelay) {
+        awaitingIdle = false;
+        resetInput();
+      } else {
+        event.preventDefault();
+        return;
+      }
+    }
+
+    const direction = Math.sign(delta);
+    const heroTop = hero.getBoundingClientRect().top;
+    const capabilitiesTop = capabilities.getBoundingClientRect().top;
+    const leavingHero = direction > 0 && Math.abs(heroTop) <= boundaryTolerance;
+    const returningHome = direction < 0 && Math.abs(capabilitiesTop - sectionOffset) <= boundaryTolerance;
+
+    if (!leavingHero && !returningHome) {
+      resetInput();
+      return;
+    }
+
+    event.preventDefault();
+
+    if (timeSinceLastWheel >= idleDelay || accumulatedDirection !== direction) {
+      accumulatedDelta = 0;
+      accumulatedDirection = direction;
+    }
+
+    accumulatedDelta += delta;
+    if (Math.abs(accumulatedDelta) < threshold) return;
+
+    moveTo(leavingHero ? capabilities : hero, now);
+  };
+
+  const handleModeChange = () => {
+    resetInput();
+    awaitingIdle = false;
+    lockedUntil = 0;
+    lastWheelAt = 0;
+  };
+
+  window.addEventListener("wheel", handleWheel, { passive: false });
+  desktopMotion.addEventListener("change", handleModeChange);
+</script>
