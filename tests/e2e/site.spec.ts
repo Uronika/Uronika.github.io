@@ -65,6 +65,7 @@ test("desktop hero uses a full-screen curtain, wall light, and enlarged composit
     const collage = document.querySelector<HTMLElement>("[data-parallax-root]")!;
     const title = hero.querySelector<HTMLElement>("h1")!;
     const capabilities = document.querySelector<HTMLElement>("#capabilities")!;
+    const heroImage = hero.querySelector<HTMLImageElement>("[data-parallax-item] img")!;
     const copyBox = copy.getBoundingClientRect();
     const collageBox = collage.getBoundingClientRect();
     const curtain = getComputedStyle(hero, "::after");
@@ -79,9 +80,11 @@ test("desktop hero uses a full-screen curtain, wall light, and enlarged composit
       curtainWidth: Number.parseFloat(curtain.width),
       curtainHeight: Number.parseFloat(curtain.height),
       curtainZ: Number(curtain.zIndex),
+      spotlightZ: Number(spotlight.zIndex),
       curtainBackground: curtain.backgroundImage,
       spotlightBackground: spotlight.backgroundImage,
       sectionLightBackground: sectionLight.backgroundImage,
+      heroImageFilter: getComputedStyle(heroImage).filter,
       viewportWidth: window.innerWidth,
       viewportHeight: window.innerHeight
     };
@@ -96,9 +99,51 @@ test("desktop hero uses a full-screen curtain, wall light, and enlarged composit
   expect(composition.spotlightBackground).toContain("radial-gradient");
   expect(composition.spotlightBackground).toContain("conic-gradient");
   expect(composition.sectionLightBackground).toContain("radial-gradient");
-  expect(composition.curtainZ).toBeGreaterThan(composition.collageZ);
-  expect(composition.copyZ).toBeGreaterThan(composition.collageZ);
-  expect(composition.copyZ).toBeGreaterThan(composition.curtainZ);
+  expect(composition.curtainZ).toBeLessThan(composition.spotlightZ);
+  expect(composition.spotlightZ).toBeLessThan(composition.collageZ);
+  expect(composition.collageZ).toBeLessThan(composition.copyZ);
+  expect(composition.heroImageFilter).toContain("brightness(0.88)");
+  expect(composition.heroImageFilter).toContain("saturate(0.92)");
+
+  const hoverableTile = page.locator("[data-parallax-item]").nth(1);
+  await hoverableTile.hover();
+  await expect
+    .poll(() => hoverableTile.locator("img").evaluate((image) => getComputedStyle(image).filter))
+    .toContain("brightness(0.98)");
+});
+
+test("all pages use cinematic ambient lighting and warm glass reflection", async ({ page }, testInfo) => {
+  await page.goto("/works/");
+
+  const lighting = await page.evaluate(() => {
+    const top = document.querySelector<HTMLElement>(".ambient--top")!;
+    const bottom = document.querySelector<HTMLElement>(".ambient--bottom")!;
+    const glass = document.querySelector<HTMLElement>(".glass")!;
+    const topStyle = getComputedStyle(top);
+    const bottomStyle = getComputedStyle(bottom);
+    const glassStyle = getComputedStyle(glass);
+    return {
+      topPosition: topStyle.position,
+      topWidth: Number.parseFloat(topStyle.width),
+      topOpacity: Number.parseFloat(topStyle.opacity),
+      topFilter: topStyle.filter,
+      topBackground: topStyle.backgroundImage,
+      bottomBackground: bottomStyle.backgroundImage,
+      glassBackground: glassStyle.backgroundImage,
+      glassShadow: glassStyle.boxShadow,
+      viewportWidth: window.innerWidth
+    };
+  });
+
+  expect(lighting.topPosition).toBe("fixed");
+  expect(lighting.topWidth).toBeGreaterThan(lighting.viewportWidth * 0.75);
+  expect(lighting.topFilter).toContain(testInfo.project.name.includes("mobile") ? "blur(60px)" : "blur(54px)");
+  expect(lighting.topBackground).toContain("radial-gradient");
+  expect(lighting.topBackground).toContain("conic-gradient");
+  expect(lighting.bottomBackground).toContain("radial-gradient");
+  expect(lighting.glassBackground).toContain("linear-gradient");
+  expect(lighting.glassShadow).toContain("inset");
+  expect(lighting.topOpacity).toBe(testInfo.project.name.includes("mobile") ? 0.6 : 1);
 });
 
 test("desktop wheel gesture pages symmetrically between hero and capabilities", async ({ page }, testInfo) => {
@@ -151,7 +196,30 @@ test("mobile home keeps natural scrolling and the existing compact collage", asy
   });
   expect(mobileHero.titleFontSize).toBeLessThanOrEqual(68);
   expect(mobileHero.curtainDisplay).toBe("none");
-  expect(mobileHero.spotlightOpacity).toBeLessThanOrEqual(0.5);
+  expect(mobileHero.spotlightOpacity).toBeGreaterThanOrEqual(0.59);
+  expect(mobileHero.spotlightOpacity).toBeLessThanOrEqual(0.6);
+});
+
+test("print resume removes ambient lights and glass reflections", async ({ page }) => {
+  await page.goto("/resume/");
+  await page.emulateMedia({ media: "print" });
+
+  const printStyles = await page.evaluate(() => {
+    const ambient = document.querySelector<HTMLElement>(".ambient--top")!;
+    const glass = document.querySelector<HTMLElement>(".resume-meta")!;
+    const bodyStyle = getComputedStyle(document.body);
+    return {
+      ambientDisplay: getComputedStyle(ambient).display,
+      bodyBackgroundImage: bodyStyle.backgroundImage,
+      bodyBackgroundColor: bodyStyle.backgroundColor,
+      glassShadow: getComputedStyle(glass).boxShadow
+    };
+  });
+
+  expect(printStyles.ambientDisplay).toBe("none");
+  expect(printStyles.bodyBackgroundImage).toBe("none");
+  expect(printStyles.bodyBackgroundColor).toBe("rgb(255, 255, 255)");
+  expect(printStyles.glassShadow).toBe("none");
 });
 
 test("contact replaces the account index and retains account details", async ({ page }) => {
