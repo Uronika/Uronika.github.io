@@ -1,0 +1,41 @@
+---
+type Account = {
+  platform: string;
+  handle: string;
+  description: string;
+  featuredContent: string;
+  href?: string;
+  placeholder: boolean;
+};
+
+interface Props {
+  account: Account;
+  index: number;
+}
+
+const { account, index } = Astro.props;
+---
+
+<article class="account-card glass">
+  <div class="account-card__top">
+    <span class="account-icon" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+    {account.placeholder && <span class="placeholder-badge">待补充</span>}
+  </div>
+  <p class="eyebrow">{account.platform}</p>
+  <h2>{account.handle}</h2>
+  <p>{account.description}</p>
+  <div class="account-feature">
+    <span>代表内容</span>
+    <strong>{account.featuredContent}</strong>
+  </div>
+  {
+    account.href ? (
+      <a class="button button--secondary" href={account.href} target="_blank" rel="noreferrer">
+        访问账号 <span aria-hidden="true">↗</span>
+      </a>
+    ) : (
+      <span class="button button--disabled" aria-disabled="true">链接待补充</span>
+    )
+  }
+</article>
+

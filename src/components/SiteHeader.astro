@@ -1,0 +1,73 @@
+---
+const pathname = Astro.url.pathname;
+const links = [
+  { href: "/", label: "首页" },
+  { href: "/works/", label: "作品" },
+  { href: "/resume/", label: "简历" },
+  { href: "/accounts/", label: "账号" }
+];
+
+const isActive = (href: string) => (href === "/" ? pathname === href : pathname.startsWith(href));
+---
+
+<header class="site-header" data-site-header>
+  <nav class="nav-shell glass" aria-label="主要导航">
+    <a class="wordmark" href="/" aria-label="Uronika 首页">
+      <span class="wordmark-dot" aria-hidden="true"></span>
+      Uronika
+    </a>
+
+    <div class="desktop-nav">
+      {
+        links.map((link) => (
+          <a href={link.href} aria-current={isActive(link.href) ? "page" : undefined}>
+            {link.label}
+          </a>
+        ))
+      }
+    </div>
+
+    <a class="nav-contact" href="/accounts/#contact">联系我</a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu" data-menu-toggle>
+      <span class="sr-only">打开导航菜单</span>
+      <span></span><span></span>
+    </button>
+  </nav>
+
+  <div class="mobile-menu glass" id="mobile-menu" data-mobile-menu hidden>
+    <div class="mobile-menu__label">导航 / Navigation</div>
+    {
+      links.map((link, index) => (
+        <a href={link.href} aria-current={isActive(link.href) ? "page" : undefined}>
+          <span>0{index + 1}</span>{link.label}
+        </a>
+      ))
+    }
+    <a class="button button--primary" href="/accounts/#contact">联系我</a>
+  </div>
+</header>
+
+<script>
+  const header = document.querySelector<HTMLElement>("[data-site-header]");
+  const toggle = header?.querySelector<HTMLButtonElement>("[data-menu-toggle]");
+  const menu = header?.querySelector<HTMLElement>("[data-mobile-menu]");
+
+  const setMenu = (open: boolean) => {
+    if (!toggle || !menu) return;
+    toggle.setAttribute("aria-expanded", String(open));
+    toggle.classList.toggle("is-open", open);
+    menu.hidden = !open;
+    document.body.classList.toggle("menu-open", open);
+    toggle.querySelector(".sr-only")!.textContent = open ? "关闭导航菜单" : "打开导航菜单";
+  };
+
+  toggle?.addEventListener("click", () => setMenu(toggle.getAttribute("aria-expanded") !== "true"));
+  menu?.querySelectorAll("a").forEach((link) => link.addEventListener("click", () => setMenu(false)));
+  window.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") setMenu(false);
+  });
+  window.addEventListener("resize", () => {
+    if (window.innerWidth > 760) setMenu(false);
+  });
+</script>
+

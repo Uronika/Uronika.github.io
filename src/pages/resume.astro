@@ -1,0 +1,239 @@
+---
+import ExperienceTimeline from "@/components/ExperienceTimeline.astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { resume, siteProfile, skillGroups } from "@/data/site";
+---
+
+<BaseLayout title="个人简历｜Uronika" description="Uronika 的网页简历与可下载 PDF。当前职业资料明确标记为待补充。">
+  <article class="resume section-shell" data-resume-page>
+    <header class="resume-header">
+      <div>
+        <p class="eyebrow">Resume / 个人简历</p>
+        <h1>{siteProfile.realName}<span>{siteProfile.alias}</span></h1>
+        <p class="resume-role">{siteProfile.role}</p>
+      </div>
+      <div class="resume-actions no-print">
+        <a class="button button--primary" href="/resume.pdf" download>下载 PDF</a>
+        <a class="button button--secondary" href="/accounts/#contact">联系我</a>
+      </div>
+    </header>
+
+    <div class="resume-meta glass">
+      <span>{siteProfile.location}</span>
+      <span>{siteProfile.availability}</span>
+      <span>{siteProfile.emailLabel}</span>
+      <a href="https://github.com/Uronika" target="_blank" rel="noreferrer">github.com/Uronika ↗</a>
+    </div>
+
+    <section class="resume-section resume-summary">
+      <p class="eyebrow">Profile / 摘要</p>
+      <h2>{resume.summary}</h2>
+    </section>
+
+    <section class="resume-section">
+      <div class="resume-section__heading">
+        <p class="eyebrow">Skills / 技能</p>
+        <h2>按领域组织，并连接到可验证作品。</h2>
+      </div>
+      <div class="resume-skills">
+        {skillGroups.map((group) => (
+          <article class="glass">
+            <h3>{group.title}</h3>
+            <p>{group.description}</p>
+            <div class="tag-list">{group.skills.map((skill) => <span>{skill}</span>)}</div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="resume-section">
+      <div class="resume-section__heading">
+        <p class="eyebrow">Experience / 经历</p>
+        <h2>工作与实习</h2>
+      </div>
+      <ExperienceTimeline entries={resume.experience} />
+    </section>
+
+    <section class="resume-section">
+      <div class="resume-section__heading">
+        <p class="eyebrow">Education / 教育</p>
+        <h2>教育经历</h2>
+      </div>
+      <ExperienceTimeline entries={resume.education} />
+    </section>
+
+    <section class="resume-section resume-columns">
+      <article class="glass">
+        <p class="eyebrow">Projects / 项目</p>
+        <h2>代表项目</h2>
+        <ul>{resume.projects.map((project) => <li>{project}</li>)}</ul>
+      </article>
+      <article class="glass">
+        <p class="eyebrow">Honors / 荣誉证书</p>
+        <h2>荣誉与证书</h2>
+        <ul>{resume.honors.map((honor) => <li>{honor}</li>)}</ul>
+      </article>
+    </section>
+  </article>
+</BaseLayout>
+
+<style>
+  .resume {
+    padding-top: 160px;
+    padding-bottom: 120px;
+  }
+
+  .resume-header {
+    display: flex;
+    gap: 40px;
+    align-items: end;
+    justify-content: space-between;
+    padding-bottom: 46px;
+  }
+
+  .resume-header h1 {
+    display: grid;
+    margin-bottom: 14px;
+    font-size: clamp(3.2rem, 8vw, 7rem);
+  }
+
+  .resume-header h1 span {
+    margin-top: 10px;
+    color: var(--color-ember);
+    font-family: var(--font-mono);
+    font-size: 0.18em;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .resume-role {
+    color: var(--color-muted);
+    font-family: var(--font-mono);
+  }
+
+  .resume-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .resume-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px 40px;
+    justify-content: space-between;
+    padding: 20px 24px;
+    color: var(--color-muted);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+  }
+
+  .resume-section {
+    padding-block: 90px;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .resume-summary h2 {
+    max-width: 1020px;
+    margin-bottom: 0;
+    font-size: clamp(2rem, 5vw, 4.4rem);
+    line-height: 1.2;
+  }
+
+  .resume-section__heading {
+    margin-bottom: 44px;
+  }
+
+  .resume-section__heading h2 {
+    margin-bottom: 0;
+    font-size: clamp(2.2rem, 5vw, 4.2rem);
+  }
+
+  .resume-skills,
+  .resume-columns {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+
+  .resume-skills article,
+  .resume-columns article {
+    padding: 26px;
+    border-radius: var(--radius-md);
+  }
+
+  .resume-skills h3 {
+    font-size: 1.5rem;
+  }
+
+  .resume-skills p,
+  .resume-columns li {
+    color: var(--color-muted);
+  }
+
+  .resume-columns {
+    grid-template-columns: 1fr 1fr;
+    border-bottom: 0;
+  }
+
+  .resume-columns h2 {
+    font-size: 1.8rem;
+  }
+
+  .resume-columns ul {
+    padding-left: 20px;
+    margin-bottom: 0;
+  }
+
+  @media (max-width: 800px) {
+    .resume-header {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .resume-skills,
+    .resume-columns {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media print {
+    .resume {
+      padding: 0;
+    }
+
+    .resume-header {
+      padding-bottom: 18pt;
+    }
+
+    .resume-header h1 {
+      font-size: 32pt;
+    }
+
+    .resume-meta {
+      padding: 8pt;
+      color: #444;
+      border: 1px solid #ddd;
+    }
+
+    .resume-section {
+      padding-block: 18pt;
+      border-color: #ddd;
+      break-inside: avoid;
+    }
+
+    .resume-summary h2,
+    .resume-section__heading h2 {
+      color: #171111;
+      font-size: 18pt;
+    }
+
+    .resume-skills article,
+    .resume-columns article {
+      padding: 10pt;
+      border: 1px solid #ddd;
+    }
+  }
+</style>
+

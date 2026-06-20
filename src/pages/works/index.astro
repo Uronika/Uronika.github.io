@@ -1,0 +1,85 @@
+---
+import { getCollection } from "astro:content";
+import SectionHeading from "@/components/SectionHeading.astro";
+import WorkGrid from "@/components/WorkGrid.astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getGithubSnapshot } from "@/lib/github";
+
+const works = (await getCollection("works")).sort(
+  (a, b) => (a.data.featuredOrder ?? 99) - (b.data.featuredOrder ?? 99)
+);
+const githubSnapshot = await getGithubSnapshot();
+---
+
+<BaseLayout
+  title="作品库｜Uronika"
+  description="Uronika 的开发、游戏、视频与图像作品。当前首版使用明确占位内容，等待真实作品资料。"
+>
+  <header class="page-hero section-shell">
+    <p class="eyebrow">Works / 作品库</p>
+    <h1><span>把技能放回作品里，</span><span>让证据自己说话。</span></h1>
+    <div class="page-hero__footer">
+      <p>统一浏览开发仓库、游戏项目、视频和图像创作。首版全部条目均为待补充占位，不代表真实经历。</p>
+      <span>{String(works.length).padStart(2, "0")} ITEMS</span>
+    </div>
+  </header>
+
+  <section class="page-section section-shell">
+    <SectionHeading
+      eyebrow="Filter / 分类"
+      title="选择一种创作方式。"
+      description="分类只改变当前视图，不会隐藏作品的跨领域标签。"
+    />
+    <WorkGrid works={works} githubRepositories={githubSnapshot.repositories} filters />
+  </section>
+</BaseLayout>
+
+<style>
+  .page-hero {
+    padding-top: clamp(160px, 22vw, 250px);
+    padding-bottom: clamp(68px, 9vw, 120px);
+  }
+
+  .page-hero h1 {
+    display: grid;
+    max-width: 1200px;
+    margin-bottom: 54px;
+    font-size: clamp(3rem, 7vw, 6.4rem);
+  }
+
+  .page-hero h1 span {
+    white-space: nowrap;
+  }
+
+  .page-hero__footer {
+    display: flex;
+    gap: 40px;
+    align-items: end;
+    justify-content: space-between;
+    padding-top: 28px;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .page-hero__footer p {
+    max-width: 680px;
+    margin-bottom: 0;
+    color: var(--color-muted);
+  }
+
+  .page-hero__footer span {
+    color: var(--color-ember);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+  }
+
+  @media (max-width: 760px) {
+    .page-hero h1 {
+      font-size: clamp(2.3rem, 9.8vw, 4rem);
+    }
+
+    .page-hero__footer {
+      display: grid;
+      align-items: start;
+    }
+  }
+</style>

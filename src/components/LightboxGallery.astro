@@ -1,0 +1,77 @@
+---
+type GalleryImage = {
+  src: string;
+  alt: string;
+  caption?: string;
+};
+
+interface Props {
+  images: GalleryImage[];
+}
+
+const { images } = Astro.props;
+---
+
+{
+  images.length > 0 && (
+    <>
+      <div class="gallery-grid">
+        {images.map((image, index) => (
+          <button
+            class="gallery-item"
+            type="button"
+            data-gallery-open
+            data-index={index}
+            data-src={image.src}
+            data-alt={image.alt}
+            data-caption={image.caption ?? ""}
+          >
+            <img src={image.src} alt={image.alt} loading="lazy" />
+            {image.caption && <span>{image.caption}</span>}
+          </button>
+        ))}
+      </div>
+      <dialog class="lightbox" data-lightbox aria-label="作品图片查看器">
+        <button type="button" class="lightbox__close" data-lightbox-close aria-label="关闭图片查看器">×</button>
+        <button type="button" class="lightbox__nav lightbox__nav--prev" data-lightbox-prev aria-label="上一张">←</button>
+        <figure>
+          <img data-lightbox-image alt="" />
+          <figcaption data-lightbox-caption />
+        </figure>
+        <button type="button" class="lightbox__nav lightbox__nav--next" data-lightbox-next aria-label="下一张">→</button>
+      </dialog>
+    </>
+  )
+}
+
+<script>
+  const triggers = [...document.querySelectorAll<HTMLButtonElement>("[data-gallery-open]")];
+  const dialog = document.querySelector<HTMLDialogElement>("[data-lightbox]");
+  const image = dialog?.querySelector<HTMLImageElement>("[data-lightbox-image]");
+  const caption = dialog?.querySelector<HTMLElement>("[data-lightbox-caption]");
+  let activeIndex = 0;
+
+  const showImage = (index: number) => {
+    if (!dialog || !image || triggers.length === 0) return;
+    activeIndex = (index + triggers.length) % triggers.length;
+    const trigger = triggers[activeIndex];
+    if (!trigger) return;
+    image.src = trigger.dataset.src ?? "";
+    image.alt = trigger.dataset.alt ?? "";
+    if (caption) caption.textContent = trigger.dataset.caption ?? "";
+    if (!dialog.open) dialog.showModal();
+  };
+
+  triggers.forEach((trigger, index) => trigger.addEventListener("click", () => showImage(index)));
+  dialog?.querySelector("[data-lightbox-close]")?.addEventListener("click", () => dialog.close());
+  dialog?.querySelector("[data-lightbox-prev]")?.addEventListener("click", () => showImage(activeIndex - 1));
+  dialog?.querySelector("[data-lightbox-next]")?.addEventListener("click", () => showImage(activeIndex + 1));
+  dialog?.addEventListener("click", (event) => {
+    if (event.target === dialog) dialog.close();
+  });
+  dialog?.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowLeft") showImage(activeIndex - 1);
+    if (event.key === "ArrowRight") showImage(activeIndex + 1);
+  });
+</script>
+

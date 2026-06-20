@@ -1,0 +1,17 @@
+---
+import { siteProfile } from "@/data/site";
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer section-shell">
+  <div>
+    <a class="wordmark" href="/">Uronika</a>
+    <p>开发、游戏、视频与图像创作的个人档案。</p>
+  </div>
+  <div class="footer-meta">
+    <a href="https://github.com/Uronika" target="_blank" rel="noreferrer">GitHub ↗</a>
+    <span>© {year} {siteProfile.alias}</span>
+  </div>
+</footer>
+

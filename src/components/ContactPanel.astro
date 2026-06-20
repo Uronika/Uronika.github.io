@@ -1,0 +1,39 @@
+---
+import { siteProfile } from "@/data/site";
+---
+
+<section class="contact-panel glass" id="contact">
+  <div>
+    <p class="eyebrow">Contact / 联系</p>
+    <h2>如果我的经历与你的机会相匹配，欢迎联系。</h2>
+    <p>邮箱尚未填写。补充真实联系方式后，这里将支持一键复制和打开邮件客户端。</p>
+  </div>
+  <div class="contact-actions">
+    {
+      siteProfile.email ? (
+        <>
+          <button class="button button--primary" type="button" data-copy-email={siteProfile.email}>复制邮箱</button>
+          <a class="button button--secondary" href={`mailto:${siteProfile.email}`}>发送邮件</a>
+        </>
+      ) : (
+        <span class="button button--disabled" aria-disabled="true">{siteProfile.emailLabel}</span>
+      )
+    }
+    <a class="button button--secondary" href="https://github.com/Uronika" target="_blank" rel="noreferrer">GitHub ↗</a>
+  </div>
+  <p class="copy-status" role="status" aria-live="polite" data-copy-status></p>
+</section>
+
+<script>
+  const copyButton = document.querySelector<HTMLButtonElement>("[data-copy-email]");
+  const status = document.querySelector<HTMLElement>("[data-copy-status]");
+  copyButton?.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(copyButton.dataset.copyEmail ?? "");
+      if (status) status.textContent = "邮箱已复制。";
+    } catch {
+      if (status) status.textContent = "复制失败，请使用发送邮件按钮。";
+    }
+  });
+</script>
+

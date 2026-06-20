@@ -1,0 +1,43 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="页面未找到｜Uronika" description="请求的页面不存在。" noindex>
+  <section class="not-found section-shell">
+    <p class="eyebrow">404 / Not Found</p>
+    <h1>这件作品还不在这里。</h1>
+    <p>链接可能已经变化，或者内容仍在准备中。你可以回到首页，或继续浏览作品库。</p>
+    <div>
+      <a class="button button--primary" href="/">返回首页</a>
+      <a class="button button--secondary" href="/works/">浏览作品</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found {
+    display: grid;
+    align-content: center;
+    min-height: 100svh;
+    padding-block: 130px;
+  }
+
+  .not-found h1 {
+    max-width: 900px;
+    margin-bottom: 24px;
+    font-size: clamp(3.4rem, 9vw, 8rem);
+  }
+
+  .not-found > p:not(.eyebrow) {
+    max-width: 620px;
+    color: var(--color-muted);
+  }
+
+  .not-found > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 24px;
+  }
+</style>
+

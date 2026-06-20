@@ -1,0 +1,47 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  works: CollectionEntry<"works">[];
+}
+
+const { works } = Astro.props;
+---
+
+<div class="hero-collage" data-parallax-root aria-label="精选作品拼贴预览">
+  {
+    works.slice(0, 4).map((work, index) => (
+      <a class={`hero-tile hero-tile--${index + 1}`} href={`/works/${work.id}/`} data-parallax-item data-depth={0.2 + index * 0.12}>
+        <img src={work.data.cover} alt={work.data.coverAlt} loading={index < 2 ? "eager" : "lazy"} />
+        <span>{work.data.title}</span>
+      </a>
+    ))
+  }
+  <div class="hero-orbit" aria-hidden="true"><span></span></div>
+</div>
+
+<script>
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const root = document.querySelector<HTMLElement>("[data-parallax-root]");
+  const items = root?.querySelectorAll<HTMLElement>("[data-parallax-item]");
+
+  root?.addEventListener("pointermove", (event) => {
+    if (reduceMotion.matches || window.innerWidth < 761) return;
+    const rect = root.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width - 0.5;
+    const y = (event.clientY - rect.top) / rect.height - 0.5;
+    items?.forEach((item) => {
+      const depth = Number(item.dataset.depth ?? 0.25);
+      item.style.setProperty("--parallax-x", `${x * depth * 16}px`);
+      item.style.setProperty("--parallax-y", `${y * depth * 16}px`);
+    });
+  });
+
+  root?.addEventListener("pointerleave", () => {
+    items?.forEach((item) => {
+      item.style.setProperty("--parallax-x", "0px");
+      item.style.setProperty("--parallax-y", "0px");
+    });
+  });
+</script>
+

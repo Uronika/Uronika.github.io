@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#2B1611"/><stop offset="1" stop-color="#120E10"/></linearGradient></defs>
+  <rect width="1200" height="760" fill="url(#g)"/><circle cx="920" cy="110" r="260" fill="#FF6B35" opacity=".16"/>
+  <rect x="96" y="92" width="1008" height="576" rx="40" fill="#171111" fill-opacity=".75" stroke="#FF9A73" stroke-opacity=".28"/>
+  <path d="m286 308-92 72 92 72M468 276l-94 208M558 308l92 72-92 72" fill="none" stroke="#FF7650" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="744" y="352" text-anchor="middle" fill="#F8F3EF" font-family="Arial,sans-serif" font-size="54" font-weight="700">开发作品</text>
+  <text x="744" y="422" text-anchor="middle" fill="#B8A9A2" font-family="Arial,sans-serif" font-size="30">真实仓库与封面待补充</text>
+</svg>
+

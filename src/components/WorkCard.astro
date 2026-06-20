@@ -1,0 +1,42 @@
+---
+import type { CollectionEntry } from "astro:content";
+import type { GithubRepositoryMetadata } from "@/lib/github";
+import { getCategoryLabel } from "@/lib/works";
+
+interface Props {
+  work: CollectionEntry<"works">;
+  github?: GithubRepositoryMetadata;
+  priority?: boolean;
+}
+
+const { work, github, priority = false } = Astro.props;
+const label = getCategoryLabel(work.data.category);
+---
+
+<a class="work-card glass" href={`/works/${work.id}/`} data-category={work.data.category} data-work-card>
+  <figure class="work-card__media">
+    <img src={work.data.cover} alt={work.data.coverAlt} loading={priority ? "eager" : "lazy"} decoding="async" />
+    <span class="work-card__category">{label}</span>
+    <span class="work-card__arrow" aria-hidden="true">↗</span>
+  </figure>
+  <div class="work-card__body">
+    <div class="work-card__title-row">
+      <h3>{work.data.title}</h3>
+      <span>{work.data.year}</span>
+    </div>
+    <p>{work.data.summary}</p>
+    <div class="tag-list" aria-label="项目标签">
+      {work.data.tags.slice(0, 3).map((tag) => <span>{tag}</span>)}
+    </div>
+    {
+      github && (
+        <div class="github-meta" aria-label="GitHub 仓库数据">
+          <span>{github.language ?? "语言待补充"}</span>
+          <span>★ {github.stars}</span>
+          <span>⑂ {github.forks}</span>
+        </div>
+      )
+    }
+  </div>
+</a>
+

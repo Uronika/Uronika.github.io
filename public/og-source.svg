@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <radialGradient id="a" cx="0" cy="0" r="1" gradientTransform="translate(944 80) rotate(141) scale(628 530)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FF6B35" stop-opacity=".74"/>
+      <stop offset="1" stop-color="#FF6B35" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="b" cx="0" cy="0" r="1" gradientTransform="translate(188 588) rotate(-42) scale(590 478)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FF4D5A" stop-opacity=".55"/>
+      <stop offset="1" stop-color="#FF4D5A" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="line" x1="94" y1="84" x2="1102" y2="548" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFB08B"/>
+      <stop offset="1" stop-color="#FF4D5A"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="#0B090A"/>
+  <rect width="1200" height="630" fill="url(#a)"/>
+  <rect width="1200" height="630" fill="url(#b)"/>
+  <rect x="54" y="54" width="1092" height="522" rx="42" fill="#171111" fill-opacity=".72" stroke="url(#line)" stroke-opacity=".48"/>
+  <circle cx="1030" cy="152" r="118" fill="#FF6B35" fill-opacity=".1" stroke="#FF9A73" stroke-opacity=".35"/>
+  <circle cx="970" cy="210" r="72" fill="#FF4D5A" fill-opacity=".12"/>
+  <text x="112" y="190" fill="#FF8A5B" font-family="Arial, sans-serif" font-size="28" font-weight="700" letter-spacing="8">PERSONAL PORTFOLIO</text>
+  <text x="104" y="330" fill="#F8F3EF" font-family="Arial, sans-serif" font-size="112" font-weight="800">Uronika</text>
+  <text x="112" y="408" fill="#C9B8AF" font-family="Arial, sans-serif" font-size="36">开发 · 游戏 · 视频 · 图像创作</text>
+  <rect x="112" y="474" width="280" height="54" rx="27" fill="#FF6B35"/>
+  <text x="158" y="510" fill="#0B090A" font-family="Arial, sans-serif" font-size="24" font-weight="700">作品与职业档案</text>
+</svg>
+

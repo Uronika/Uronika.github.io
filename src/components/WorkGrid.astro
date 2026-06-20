@@ -1,0 +1,79 @@
+---
+import type { CollectionEntry } from "astro:content";
+import type { GithubRepositoryMetadata } from "@/lib/github";
+import WorkCard from "./WorkCard.astro";
+
+interface Props {
+  works: CollectionEntry<"works">[];
+  githubRepositories?: Record<string, GithubRepositoryMetadata>;
+  filters?: boolean;
+  featured?: boolean;
+}
+
+const { works, githubRepositories = {}, filters = false, featured = false } = Astro.props;
+const filterItems = [
+  { value: "all", label: "全部" },
+  { value: "development", label: "开发" },
+  { value: "game", label: "游戏" },
+  { value: "video", label: "视频" },
+  { value: "image", label: "图像" }
+];
+---
+
+<div data-work-filter-root>
+  {
+    filters && (
+      <div class="filter-bar glass" role="group" aria-label="筛选作品分类">
+        {filterItems.map((item) => (
+          <button type="button" data-filter={item.value} aria-pressed={item.value === "all" ? "true" : "false"}>
+            {item.label}
+          </button>
+        ))}
+      </div>
+    )
+  }
+  <div class:list={["work-grid", featured && "work-grid--featured"]} data-work-grid>
+    {
+      works.map((work, index) => (
+        <WorkCard
+          work={work}
+          github={work.data.repository ? githubRepositories[work.data.repository.name] : undefined}
+          priority={index < 2}
+        />
+      ))
+    }
+  </div>
+  <p class="filter-empty glass" data-filter-empty hidden>这个分类还没有作品，真实内容将在后续补充。</p>
+</div>
+
+{
+  filters && (
+    <script>
+      const root = document.querySelector<HTMLElement>("[data-work-filter-root]");
+      const buttons = root?.querySelectorAll<HTMLButtonElement>("[data-filter]");
+      const cards = root?.querySelectorAll<HTMLElement>("[data-work-card]");
+      const empty = root?.querySelector<HTMLElement>("[data-filter-empty]");
+
+      const applyFilter = (value: string, updateUrl = true) => {
+        let visible = 0;
+        cards?.forEach((card) => {
+          const show = value === "all" || card.dataset.category === value;
+          card.hidden = !show;
+          if (show) visible += 1;
+        });
+        buttons?.forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.filter === value)));
+        if (empty) empty.hidden = visible !== 0;
+        if (updateUrl) {
+          const url = new URL(window.location.href);
+          value === "all" ? url.searchParams.delete("category") : url.searchParams.set("category", value);
+          window.history.replaceState({}, "", url);
+        }
+      };
+
+      buttons?.forEach((button) => button.addEventListener("click", () => applyFilter(button.dataset.filter ?? "all")));
+      const initial = new URL(window.location.href).searchParams.get("category") ?? "all";
+      applyFilter(initial, false);
+    </script>
+  )
+}
+

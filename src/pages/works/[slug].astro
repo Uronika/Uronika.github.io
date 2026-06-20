@@ -1,0 +1,321 @@
+---
+import { getCollection, render, type CollectionEntry } from "astro:content";
+import LightboxGallery from "@/components/LightboxGallery.astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getGithubSnapshot } from "@/lib/github";
+import { getCategoryLabel } from "@/lib/works";
+
+export async function getStaticPaths() {
+  const works = await getCollection("works");
+  return works.map((work) => ({ params: { slug: work.id }, props: { work } }));
+}
+
+interface Props {
+  work: CollectionEntry<"works">;
+}
+
+const { work } = Astro.props;
+const { Content } = await render(work);
+const githubSnapshot = await getGithubSnapshot();
+const github = work.data.repository ? githubSnapshot.repositories[work.data.repository.name] : undefined;
+const creativeWorkSchema = {
+  "@context": "https://schema.org",
+  "@type": "CreativeWork",
+  name: work.data.title,
+  description: work.data.summary,
+  image: new URL(work.data.cover, Astro.site).href,
+  creator: { "@type": "Person", name: "Uronika" },
+  genre: getCategoryLabel(work.data.category),
+  dateCreated: work.data.year
+};
+---
+
+<BaseLayout title={`${work.data.title}｜Uronika`} description={work.data.summary} image={work.data.cover} type="article">
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(creativeWorkSchema)} />
+  <article class="work-detail section-shell">
+    <a class="back-link" href="/works/">← 返回作品库</a>
+    <header class="work-detail__header">
+      <div>
+        <p class="eyebrow">{getCategoryLabel(work.data.category)} / {work.data.detailMode === "case-study" ? "案例研究" : "作品档案"}</p>
+        <h1>{work.data.title}</h1>
+      </div>
+      <p>{work.data.summary}</p>
+    </header>
+
+    <figure class="work-cover glass">
+      <img src={work.data.cover} alt={work.data.coverAlt} />
+      <figcaption>占位封面将在正式发布前替换为真实作品视觉。</figcaption>
+    </figure>
+
+    <div class="work-facts glass">
+      <div><span>年份</span><strong>{work.data.year}</strong></div>
+      <div><span>状态</span><strong>{work.data.status}</strong></div>
+      <div><span>职责</span><strong>{work.data.role}</strong></div>
+      <div><span>分类</span><strong>{getCategoryLabel(work.data.category)}</strong></div>
+    </div>
+
+    <div class="work-detail__layout">
+      <aside>
+        <p class="eyebrow">Tags / 标签</p>
+        <div class="tag-list">{work.data.tags.map((tag) => <span>{tag}</span>)}</div>
+        {
+          github && (
+            <div class="repo-stats glass">
+              <span>GitHub 元数据</span>
+              <strong>{github.language ?? "语言待补充"}</strong>
+              <p>★ {github.stars} · Fork {github.forks}</p>
+            </div>
+          )
+        }
+        <div class="detail-actions no-print">
+          {work.data.repository && <a class="button button--secondary" href={work.data.repository.url} target="_blank" rel="noreferrer">查看仓库 ↗</a>}
+          {work.data.externalUrl && <a class="button button--secondary" href={work.data.externalUrl} target="_blank" rel="noreferrer">查看原作 ↗</a>}
+          {work.data.video && <a class="button button--secondary" href={work.data.video.url} target="_blank" rel="noreferrer">原视频 ↗</a>}
+        </div>
+      </aside>
+      <div class="prose"><Content /></div>
+    </div>
+
+    {
+      work.data.video && (
+        <section class="detail-section">
+          <p class="eyebrow">Video / 视频</p>
+          <div class="video-frame glass">
+            <iframe
+              src={work.data.video.embedUrl}
+              title={`${work.data.title} 视频`}
+              loading="lazy"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+            />
+          </div>
+        </section>
+      )
+    }
+
+    {
+      work.data.gallery.length > 0 && (
+        <section class="detail-section">
+          <p class="eyebrow">Gallery / 图库</p>
+          <h2>从作品画面继续了解细节。</h2>
+          <LightboxGallery images={work.data.gallery} />
+        </section>
+      )
+    }
+
+    <nav class="detail-footer glass" aria-label="作品详情页尾导航">
+      <div>
+        <p class="eyebrow">Next / 下一步</p>
+        <h2>继续浏览其他作品。</h2>
+      </div>
+      <a class="button button--primary" href="/works/">返回作品库</a>
+    </nav>
+  </article>
+</BaseLayout>
+
+<style>
+  .work-detail {
+    padding-top: 150px;
+    padding-bottom: 110px;
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-bottom: 70px;
+    color: var(--color-muted);
+    font-size: 0.84rem;
+  }
+
+  .back-link:hover {
+    color: var(--color-text);
+  }
+
+  .work-detail__header {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: clamp(34px, 7vw, 100px);
+    align-items: end;
+    margin-bottom: 48px;
+  }
+
+  .work-detail__header h1 {
+    max-width: 800px;
+    margin-bottom: 0;
+    font-size: clamp(3rem, 8vw, 7rem);
+  }
+
+  .work-detail__header > p {
+    margin-bottom: 10px;
+    color: var(--color-muted);
+    font-size: 1.08rem;
+  }
+
+  .work-cover {
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+  }
+
+  .work-cover img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    filter: brightness(0.9) saturate(0.9);
+  }
+
+  .work-cover figcaption {
+    padding: 12px 18px;
+    color: var(--color-muted);
+    font-size: 0.72rem;
+  }
+
+  .work-facts {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    margin-top: 20px;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+  }
+
+  .work-facts > div {
+    display: grid;
+    gap: 8px;
+    padding: 22px;
+    background: rgba(255, 255, 255, 0.015);
+  }
+
+  .work-facts span {
+    color: var(--color-muted);
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+  }
+
+  .work-facts strong {
+    font-size: 0.9rem;
+  }
+
+  .work-detail__layout {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 750px);
+    gap: clamp(40px, 8vw, 120px);
+    justify-content: center;
+    padding-block: 100px;
+  }
+
+  .work-detail__layout aside {
+    position: sticky;
+    top: 120px;
+    align-self: start;
+  }
+
+  .repo-stats {
+    display: grid;
+    gap: 6px;
+    padding: 16px;
+    margin-top: 22px;
+    border-radius: var(--radius-sm);
+  }
+
+  .repo-stats span,
+  .repo-stats p {
+    color: var(--color-muted);
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+  }
+
+  .repo-stats p {
+    margin-bottom: 0;
+  }
+
+  .detail-actions {
+    display: grid;
+    gap: 8px;
+    margin-top: 24px;
+  }
+
+  .prose :global(h2) {
+    margin: 68px 0 20px;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+  }
+
+  .prose :global(h2:first-child) {
+    margin-top: 0;
+  }
+
+  .prose :global(p) {
+    color: #cfbfb7;
+    font-size: 1.06rem;
+    line-height: 1.9;
+  }
+
+  .detail-section {
+    padding-block: 80px;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .detail-section h2 {
+    max-width: 800px;
+    margin-bottom: 40px;
+    font-size: clamp(2rem, 5vw, 4.2rem);
+  }
+
+  .video-frame {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+  }
+
+  .video-frame iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  .detail-footer {
+    display: flex;
+    gap: 40px;
+    align-items: end;
+    justify-content: space-between;
+    padding: clamp(28px, 6vw, 62px);
+    margin-top: 60px;
+    border-radius: var(--radius-lg);
+  }
+
+  .detail-footer h2 {
+    margin-bottom: 0;
+    font-size: clamp(2rem, 5vw, 4rem);
+  }
+
+  @media (max-width: 760px) {
+    .work-detail {
+      padding-top: 116px;
+    }
+
+    .back-link {
+      margin-bottom: 42px;
+    }
+
+    .work-detail__header,
+    .work-detail__layout {
+      grid-template-columns: 1fr;
+    }
+
+    .work-facts {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .work-detail__layout {
+      padding-block: 70px;
+    }
+
+    .work-detail__layout aside {
+      position: static;
+    }
+
+    .detail-footer {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+</style>

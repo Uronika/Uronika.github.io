@@ -1,0 +1,33 @@
+---
+type Entry = {
+  period: string;
+  organization: string;
+  role: string;
+  description: string;
+  placeholder?: boolean;
+};
+
+interface Props {
+  entries: Entry[];
+}
+
+const { entries } = Astro.props;
+---
+
+<div class="timeline">
+  {
+    entries.map((entry) => (
+      <article class="timeline-item">
+        <div class="timeline-marker" aria-hidden="true"></div>
+        <div class="timeline-period">{entry.period}</div>
+        <div class="timeline-content glass">
+          {entry.placeholder && <span class="placeholder-badge">资料待补充</span>}
+          <p>{entry.organization}</p>
+          <h3>{entry.role}</h3>
+          <div>{entry.description}</div>
+        </div>
+      </article>
+    ))
+  }
+</div>
+
