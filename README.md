@@ -89,14 +89,18 @@ Playwright 优先复用 `C:\Users\Mavis\AppData\Local\ms-playwright` 中的 Chro
 4. `.github/workflows/deploy-pages.yml` 会自动检查、构建、测试并发布 `dist/`。
 5. 部署成功后通过 `https://uronika.github.io` 访问网站。
 
-当前阶段未创建远程仓库、未推送，也未实际部署。
+当前仓库已关联并推送至 `Uronika/Uronika.github.io`，由 GitHub Actions 自动验证并部署到 `https://uronika.github.io`。
 
-## 改动记录规则
+## 备份、推送与 Release 规则
 
-- 所有受 Git 跟踪文件的新增、修改、移动和删除都必须记录，包括 `README.md` 自身。
-- `node_modules/`、`dist/`、`.astro/`、`.cache/`、测试报告和其他 `.gitignore` 生成物不纳入记录。
-- 每次任务完成前，在本文档最末尾追加一条记录，包含 Asia/Hong_Kong 日期时间、涉及文件或目录和改动梗概。
-- 一次任务涉及多个文件时使用一条汇总记录；不得覆盖或删除历史记录。
+- 开始修改任何受 Git 跟踪的文件前，先确认工作树状态和变更边界；不得覆盖已有的未提交改动。
+- 工作树干净且本地基线与远端一致后，为改动前的基线提交创建并推送带说明的备份标签，命名格式为 `backup/YYYYMMDD-HHmmss-before-<task>`。该标签是本次任务的恢复点，不替代常规提交。
+- 修改完成后运行与变更风险相称的最小必要验证；验证通过后提交并推送 `main`。
+- 推送后等待 GitHub Actions 检查和 Pages 部署成功，再立即为该提交创建 GitHub Release。检查或部署失败时不得发布 Release，应先修复并重新验证。
+- 正式版本使用语义化版本：修复、文档和小调整递增补丁版本，向后兼容的新内容或功能递增次版本，不兼容变更递增主版本。
+- 所有受 Git 跟踪文件的新增、修改、移动和删除都必须写入对应 Release 说明，包括 `README.md` 自身；`node_modules/`、`dist/`、`.astro/`、`.cache/`、测试报告和其他 `.gitignore` 生成物不纳入记录。
+- Release 说明必须包含 Asia/Hong_Kong 日期时间、改动前备份标签、目标提交、涉及文件或目录、改动梗概、验证方式与结果，以及仍然存在的风险或待办事项。
+- Release 历史不得覆盖或删除。README 只保留本流程、Release 索引和制度启用前的历史记录，今后的详细改动记录以 GitHub Releases 为准。
 
 ## 后续计划
 
@@ -104,13 +108,19 @@ Playwright 优先复用 `C:\Users\Mavis\AppData\Local\ms-playwright` 中的 Chro
 - 筛选真实公开仓库并逐项撰写准确介绍
 - 为每个真实作品准备定制封面、截图与视频链接
 - 内容替换后重新运行桌面端、移动端和 PDF 视觉验证
-- 创建并关联 `Uronika.github.io` 远程仓库
+- 按“改动前备份、验证后发布 Release”的流程持续维护线上版本
 
 ## License
 
 本项目主要用于个人网站展示。未经许可，请勿直接复制其中的个人资料和图片。
 
-## 改动记录
+## 发布记录
+
+正式版本、完整改动说明与可恢复版本见 [GitHub Releases](https://github.com/Uronika/Uronika.github.io/releases)。
+
+## 历史改动记录（Release 制度启用前）
+
+以下记录为启用“改动前备份、验证后发布 Release”制度前的只读档案；后续记录不再追加到此表。
 
 | 日期时间（Asia/Hong_Kong） | 涉及文件 | 改动梗概 |
 | --- | --- | --- |
