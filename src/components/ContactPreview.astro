@@ -1,0 +1,144 @@
+---
+import { siteProfile } from "@/data/site";
+---
+
+<div class="contact-preview glass">
+  <div class="contact-preview__copy">
+    <p class="eyebrow">05 / Contact</p>
+    <h2>如果你有合适的机会，或者想聊聊作品，欢迎联系。</h2>
+    <p>这里保留最直接的联系方式和公开账号入口；完整的平台说明集中在“联系我”详情页。</p>
+    <div class="contact-preview__actions">
+      {
+        siteProfile.email ? (
+          <>
+            <button class="button button--primary" type="button" data-preview-copy-email={siteProfile.email}>复制邮箱</button>
+            <a class="button button--secondary" href={`mailto:${siteProfile.email}`}>发送邮件</a>
+          </>
+        ) : (
+          <span class="button button--disabled" aria-disabled="true">{siteProfile.emailLabel}</span>
+        )
+      }
+      <a class="button button--primary" href="/contact/">查看联系详情</a>
+    </div>
+    <p class="copy-status" role="status" aria-live="polite" data-preview-copy-status></p>
+  </div>
+
+  <div class="contact-preview__accounts" aria-label="主要公开账号">
+    {
+      siteProfile.socials.map((social, index) =>
+        social.href ? (
+          <a href={social.href} target="_blank" rel="noreferrer">
+            <span class="account-mark" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+            <span><strong>{social.label}</strong><small>{social.handle}</small></span>
+            <span aria-hidden="true">↗</span>
+          </a>
+        ) : (
+          <span class="account-placeholder">
+            <span class="account-mark" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+            <span><strong>{social.label}</strong><small>{social.handle}</small></span>
+            <span class="placeholder-badge">待补充</span>
+          </span>
+        )
+      )
+    }
+  </div>
+</div>
+
+<script>
+  const button = document.querySelector<HTMLButtonElement>("[data-preview-copy-email]");
+  const status = document.querySelector<HTMLElement>("[data-preview-copy-status]");
+  button?.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(button.dataset.previewCopyEmail ?? "");
+      if (status) status.textContent = "邮箱已复制。";
+    } catch {
+      if (status) status.textContent = "复制失败，请进入联系详情页。";
+    }
+  });
+</script>
+
+<style>
+  .contact-preview {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(360px, 0.9fr);
+    gap: clamp(40px, 8vw, 110px);
+    align-items: center;
+    width: 100%;
+    padding: clamp(34px, 6vw, 72px);
+    border-radius: var(--radius-lg);
+  }
+
+  h2 {
+    max-width: 740px;
+    margin-bottom: 20px;
+    font-size: clamp(2.4rem, 5.5vw, 5rem);
+  }
+
+  .contact-preview__copy > p:not(.eyebrow, .copy-status) {
+    max-width: 650px;
+    color: var(--color-muted);
+  }
+
+  .contact-preview__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 28px;
+  }
+
+  .copy-status {
+    min-height: 1.6em;
+    margin: 12px 0 0;
+    color: var(--color-muted);
+    font-size: 0.78rem;
+  }
+
+  .contact-preview__accounts {
+    display: grid;
+  }
+
+  .contact-preview__accounts > a,
+  .contact-preview__accounts > span {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 16px;
+    align-items: center;
+    min-height: 78px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .account-mark {
+    display: grid;
+    width: 42px;
+    height: 42px;
+    place-items: center;
+    color: var(--color-ember);
+    background: rgba(255, 107, 53, 0.08);
+    border: 1px solid rgba(255, 107, 53, 0.24);
+    border-radius: 50%;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+  }
+
+  .contact-preview__accounts strong,
+  .contact-preview__accounts small {
+    display: block;
+  }
+
+  .contact-preview__accounts small {
+    margin-top: 4px;
+    color: var(--color-muted);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+  }
+
+  @media (max-width: 900px) {
+    .contact-preview {
+      grid-template-columns: 1fr;
+      gap: 30px;
+      padding: 26px;
+    }
+  }
+</style>
+

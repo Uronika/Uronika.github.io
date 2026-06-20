@@ -10,6 +10,9 @@ interface Props {
   image?: string;
   type?: "website" | "article";
   noindex?: boolean;
+  pageClass?: string;
+  canonicalPath?: string;
+  redirectTo?: string;
 }
 
 const {
@@ -17,10 +20,13 @@ const {
   description = siteProfile.introduction,
   image = "/og-default.png",
   type = "website",
-  noindex = false
+  noindex = false,
+  pageClass,
+  canonicalPath,
+  redirectTo
 } = Astro.props;
 
-const canonical = new URL(Astro.url.pathname, Astro.site ?? siteProfile.siteUrl);
+const canonical = new URL(canonicalPath ?? Astro.url.pathname, Astro.site ?? siteProfile.siteUrl);
 const socialImage = new URL(image, Astro.site ?? siteProfile.siteUrl);
 const personSchema = {
   "@context": "https://schema.org",
@@ -34,13 +40,14 @@ const personSchema = {
 ---
 
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" class={pageClass}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#0B090A" />
     <meta name="description" content={description} />
     {noindex && <meta name="robots" content="noindex" />}
+    {redirectTo && <meta http-equiv="refresh" content={`0;url=${redirectTo}`} />}
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta property="og:site_name" content="Uronika" />

@@ -187,6 +187,26 @@ h3 {
   transform: translateX(-50%);
 }
 
+@media (min-width: 981px) {
+  html.home-snap {
+    scroll-padding-top: 92px;
+    scroll-snap-type: y proximity;
+  }
+
+  html.home-snap .home-section {
+    min-height: 100svh;
+    scroll-margin-top: 92px;
+    scroll-snap-align: start;
+    scroll-snap-stop: normal;
+  }
+
+  html.home-snap .page-section.home-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
+
 .eyebrow {
   margin-bottom: 16px;
   color: #ff9a73;
@@ -622,7 +642,7 @@ h3 {
 
 .hero-collage {
   position: relative;
-  min-height: 560px;
+  min-height: 650px;
   isolation: isolate;
 }
 
@@ -667,33 +687,33 @@ h3 {
 
 .hero-tile--1 {
   --rotate: -4deg;
-  top: 70px;
-  left: 3%;
-  width: 58%;
+  top: 98px;
+  left: 7%;
+  width: 62%;
   aspect-ratio: 16 / 10;
 }
 
 .hero-tile--2 {
   --rotate: 4deg;
-  top: 8px;
-  right: 0;
-  width: 42%;
+  top: 38px;
+  right: 1%;
+  width: 40%;
   aspect-ratio: 4 / 3;
 }
 
 .hero-tile--3 {
   --rotate: 2deg;
-  right: 4%;
-  bottom: 0;
-  width: 48%;
+  right: 3%;
+  bottom: 34px;
+  width: 49%;
   aspect-ratio: 16 / 10;
 }
 
 .hero-tile--4 {
   --rotate: -3deg;
-  bottom: 24px;
-  left: 10%;
-  width: 32%;
+  bottom: 58px;
+  left: 15%;
+  width: 31%;
   aspect-ratio: 4 / 3;
 }
 
@@ -1274,5 +1294,8 @@ h3 {
     --parallax-x: 0px !important;
     --parallax-y: 0px !important;
   }
-}
 
+  html.home-snap {
+    scroll-snap-type: none;
+  }
+}

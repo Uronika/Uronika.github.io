@@ -7,7 +7,8 @@
 ## 已实现内容
 
 - 深色熔岩橙与珊瑚红暖光视觉、玻璃面板和响应式布局
-- 首页、统一作品库、作品详情、网页简历、账号页与自定义 404
+- 五段吸附式桌面首页、统一作品库、作品详情、网页简历、联系页与自定义 404
+- 放大并置于标题下层的桌面作品拼贴，以及右侧章节圆点导航
 - 开发、游戏、视频和图像四类作品筛选
 - 键盘可操作的图片灯箱和移动端全屏导航
 - Markdown 作品内容与类型化个人资料
@@ -118,3 +119,4 @@ Playwright 优先复用 `C:\Users\Mavis\AppData\Local\ms-playwright` 中的 Chro
 | 2026-06-20 16:25:18 | `src/`、`public/`、`scripts/`、`tests/e2e/`、`.github/workflows/`、`README.md` | 完成深色暖光个人网站首版、六个明确占位作品、GitHub 回退同步、OG/PDF 生成、SEO、Pages 部署和桌面/移动 E2E。 |
 | 2026-06-20 16:30:40 | `README.md` | 记录首次 GitHub 发布准备，目标为公开用户主页仓库 `Uronika/Uronika.github.io` 的 `main` 分支。 |
 | 2026-06-20 16:35:40 | `scripts/generate-resume-pdf.mjs`、`README.md` | 修复 Linux CI 下 Astro CLI 的跨平台定位，并使用随机预览端口避免残留进程掩盖 PDF 构建失败。 |
+| 2026-06-20 18:42:11 | `astro.config.mjs`、`src/layouts/`、`src/components/`、`src/pages/`、`src/styles/global.css`、`tests/e2e/site.spec.ts`、`README.md` | 放大桌面首页作品拼贴，加入五段柔和吸附和章节圆点；将账号入口迁移至新的联系页，旧地址改为 noindex 兼容跳转并移出 sitemap。 |

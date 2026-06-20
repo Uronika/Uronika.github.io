@@ -1,7 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
-const routes = ["/", "/works/", "/resume/", "/accounts/", "/works/development-01/"];
+const routes = ["/", "/works/", "/resume/", "/contact/", "/works/development-01/"];
 
 test.describe("site shell", () => {
   for (const route of routes) {
@@ -22,7 +22,7 @@ test.describe("site shell", () => {
   }
 
   test("critical routes have no serious accessibility violations", async ({ page }) => {
-    for (const route of ["/", "/works/", "/resume/", "/accounts/"]) {
+    for (const route of ["/", "/works/", "/resume/", "/contact/"]) {
       await page.goto(route, { waitUntil: "networkidle" });
       const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze();
       const serious = results.violations.filter((violation) => ["serious", "critical"].includes(violation.impact ?? ""));
@@ -36,6 +36,86 @@ test("home displays exactly six featured placeholders", async ({ page }) => {
   const cards = page.locator("#featured-works [data-work-card]");
   await expect(cards).toHaveCount(6);
   await expect(cards.first()).toContainText("待补充");
+});
+
+test("desktop home uses five snap sections and an active section navigator", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name.includes("mobile"), "Desktop-only section navigation");
+  await page.goto("/");
+
+  await expect(page.locator("[data-home-section]")).toHaveCount(5);
+  const snapType = await page.locator("html").evaluate((element) => getComputedStyle(element).scrollSnapType);
+  expect(snapType).toContain("y");
+
+  const sectionLinks = page.locator("[data-home-section-nav] [data-section-link]");
+  await expect(sectionLinks).toHaveCount(5);
+  await expect(page.locator('[data-section-link="home"]')).toHaveAttribute("aria-current", "step");
+
+  await page.locator('[data-section-link="contact"]').click();
+  await expect(page).toHaveURL(/#contact$/);
+  await expect(page.locator('[data-section-link="contact"]')).toHaveAttribute("aria-current", "step");
+});
+
+test("desktop hero collage is enlarged, overlaps the copy, and stays behind text", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name.includes("mobile"), "Desktop-only collage composition");
+  await page.goto("/");
+
+  const composition = await page.evaluate(() => {
+    const copy = document.querySelector<HTMLElement>(".hero-copy")!;
+    const collage = document.querySelector<HTMLElement>("[data-parallax-root]")!;
+    const copyBox = copy.getBoundingClientRect();
+    const collageBox = collage.getBoundingClientRect();
+    return {
+      collageWidth: collageBox.width,
+      overlap: copyBox.right - collageBox.left,
+      copyZ: Number(getComputedStyle(copy).zIndex),
+      collageZ: Number(getComputedStyle(collage).zIndex)
+    };
+  });
+
+  expect(composition.collageWidth).toBeGreaterThan(800);
+  expect(composition.overlap).toBeGreaterThan(100);
+  expect(composition.copyZ).toBeGreaterThan(composition.collageZ);
+});
+
+test("mobile home keeps natural scrolling and the existing compact collage", async ({ page }, testInfo) => {
+  test.skip(!testInfo.project.name.includes("mobile"), "Mobile-only layout behavior");
+  await page.goto("/");
+
+  const snapType = await page.locator("html").evaluate((element) => getComputedStyle(element).scrollSnapType);
+  expect(snapType).toBe("none");
+  await expect(page.locator("[data-home-section-nav]")).not.toBeVisible();
+
+  const collage = await page.locator("[data-parallax-root]").boundingBox();
+  expect(collage).not.toBeNull();
+  expect(collage!.width).toBeLessThanOrEqual(390);
+});
+
+test("contact replaces the account index and retains account details", async ({ page }) => {
+  await page.goto("/contact/");
+  await expect(page.getByRole("heading", { name: "机会、合作， 或者一次有意思的交流。" })).toBeVisible();
+  await expect(page.locator(".account-card")).toHaveCount(3);
+  await expect(page.getByText("邮箱待补充").first()).toBeVisible();
+
+  const header = page.locator("[data-site-header]");
+  await expect(header.getByRole("link", { name: "账号" })).toHaveCount(0);
+  await expect(header.locator(".nav-contact")).toHaveAttribute("href", "/contact/");
+});
+
+test("legacy accounts page is noindex, redirects, and is excluded from sitemap", async ({ page, request }) => {
+  const legacyResponse = await request.get("/accounts/");
+  const legacyHtml = await legacyResponse.text();
+  expect(legacyHtml).toContain('name="robots" content="noindex"');
+  expect(legacyHtml).toContain('href="https://uronika.github.io/contact/"');
+  expect(legacyHtml).toContain('http-equiv="refresh"');
+
+  await page.goto("/accounts/");
+  await page.waitForURL("**/contact/");
+
+  const sitemapResponse = await request.get("/sitemap-0.xml");
+  expect(sitemapResponse.ok()).toBeTruthy();
+  const sitemap = await sitemapResponse.text();
+  expect(sitemap).toContain("https://uronika.github.io/contact/");
+  expect(sitemap).not.toContain("https://uronika.github.io/accounts/");
 });
 
 test("work filters expose all four categories", async ({ page }) => {
@@ -76,6 +156,8 @@ test("reduced motion disables hero parallax", async ({ page }) => {
   const parallaxY = await tile.evaluate((element) => getComputedStyle(element).getPropertyValue("--parallax-y").trim());
   expect(parallaxX).toBe("0px");
   expect(parallaxY).toBe("0px");
+  const snapType = await page.locator("html").evaluate((element) => getComputedStyle(element).scrollSnapType);
+  expect(snapType).toBe("none");
 });
 
 test("mobile navigation opens and closes", async ({ page }, testInfo) => {

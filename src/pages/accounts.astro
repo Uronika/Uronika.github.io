@@ -1,56 +1,47 @@
 ---
-import AccountCard from "@/components/AccountCard.astro";
-import ContactPanel from "@/components/ContactPanel.astro";
-import { accounts } from "@/data/site";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 ---
 
-<BaseLayout title="公开账号｜Uronika" description="Uronika 在 GitHub、视频与图像创作平台的公开账号入口。">
-  <header class="accounts-hero section-shell">
-    <p class="eyebrow">Accounts / 公开账号</p>
-    <h1>同一个人，<br />在不同媒介里工作。</h1>
-    <p>这里不是单纯的图标链接，而会说明每个平台上分享什么、为什么值得继续关注。当前除 GitHub 外均为待补充占位。</p>
-  </header>
-
-  <section class="page-section section-shell">
-    <div class="accounts-grid">
-      {accounts.map((account, index) => <AccountCard account={account} index={index} />)}
-    </div>
-  </section>
-
-  <section class="page-section section-shell">
-    <ContactPanel />
+<BaseLayout
+  title="页面已迁移｜Uronika"
+  description="公开账号与联系方式已迁移至联系我页面。"
+  noindex
+  canonicalPath="/contact/"
+  redirectTo="/contact/"
+>
+  <section class="redirect-page section-shell">
+    <p class="eyebrow">Moved / 页面已迁移</p>
+    <h1>账号信息已经并入“联系我”。</h1>
+    <p>如果浏览器没有自动跳转，请使用下面的按钮。</p>
+    <a class="button button--primary" href="/contact/">前往联系我</a>
   </section>
 </BaseLayout>
 
+<script is:inline>
+  window.location.replace("/contact/");
+</script>
+
 <style>
-  .accounts-hero {
-    padding-top: clamp(160px, 22vw, 250px);
-    padding-bottom: 80px;
-  }
-
-  .accounts-hero h1 {
-    max-width: 1000px;
-    margin-bottom: 36px;
-    font-size: clamp(3rem, 8vw, 7.2rem);
-  }
-
-  .accounts-hero > p:last-child {
-    max-width: 700px;
-    color: var(--color-muted);
-    font-size: 1.04rem;
-  }
-
-  .accounts-grid {
+  .redirect-page {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 18px;
+    align-content: center;
+    min-height: 100svh;
+    padding-block: 130px;
   }
 
-  @media (max-width: 900px) {
-    .accounts-grid {
-      grid-template-columns: 1fr;
-    }
+  h1 {
+    max-width: 850px;
+    margin-bottom: 20px;
+    font-size: clamp(2.8rem, 7vw, 6rem);
+  }
+
+  .redirect-page > p:not(.eyebrow) {
+    color: var(--color-muted);
+  }
+
+  .button {
+    width: max-content;
+    margin-top: 18px;
   }
 </style>
 

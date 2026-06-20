@@ -1,0 +1,56 @@
+---
+import AccountCard from "@/components/AccountCard.astro";
+import ContactPanel from "@/components/ContactPanel.astro";
+import { accounts } from "@/data/site";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="联系我｜Uronika" description="联系 Uronika，并查看 GitHub、视频与图像创作等公开账号入口。">
+  <header class="contact-hero section-shell">
+    <p class="eyebrow">Contact / 联系我</p>
+    <h1>机会、合作，<br />或者一次有意思的交流。</h1>
+    <p>邮箱和各平台资料会在确认后逐项补充。当前仅 GitHub 为已配置公开入口，其余内容保持明确占位。</p>
+  </header>
+
+  <section class="page-section section-shell">
+    <div class="accounts-grid">
+      {accounts.map((account, index) => <AccountCard account={account} index={index} />)}
+    </div>
+  </section>
+
+  <section class="page-section section-shell">
+    <ContactPanel />
+  </section>
+</BaseLayout>
+
+<style>
+  .contact-hero {
+    padding-top: clamp(160px, 22vw, 250px);
+    padding-bottom: 80px;
+  }
+
+  .contact-hero h1 {
+    max-width: 1120px;
+    margin-bottom: 36px;
+    font-size: clamp(3rem, 8vw, 7.2rem);
+  }
+
+  .contact-hero > p:last-child {
+    max-width: 700px;
+    color: var(--color-muted);
+    font-size: 1.04rem;
+  }
+
+  .accounts-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+
+  @media (max-width: 900px) {
+    .accounts-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
