@@ -33,7 +33,7 @@ export const siteProfile = {
 
 export const skillGroups: SkillGroup[] = [
   {
-    title: "软件开发",
+    title: "编程开发",
     description: "技术栈、工程实践与目标岗位相关能力将在补充真实资料后呈现。",
     skills: ["技能待补充", "工具待补充", "工程证据待补充"],
     evidenceHref: "/works/?category=development"
@@ -101,4 +101,3 @@ export const accounts = [
     placeholder: true
   }
 ];
-

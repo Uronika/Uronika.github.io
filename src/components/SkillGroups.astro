@@ -9,12 +9,13 @@ import { skillGroups } from "@/data/site";
         <div class="skill-card__number">0{index + 1}</div>
         <h3>{group.title}</h3>
         <p>{group.description}</p>
-        <div class="tag-list">
-          {group.skills.map((skill) => <span>{skill}</span>)}
+        <div class="skill-card__footer">
+          <div class="tag-list">
+            {group.skills.map((skill) => <span>{skill}</span>)}
+          </div>
+          {group.evidenceHref && <a class="text-link" href={group.evidenceHref}>查看能力证据 <span aria-hidden="true">↗</span></a>}
         </div>
-        {group.evidenceHref && <a class="text-link" href={group.evidenceHref}>查看能力证据 <span aria-hidden="true">↗</span></a>}
       </article>
     ))
   }
 </div>
-

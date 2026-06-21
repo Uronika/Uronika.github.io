@@ -144,7 +144,8 @@ const githubSnapshot = await getGithubSnapshot();
   .hero-copy {
     position: relative;
     z-index: 4;
-    width: min(56%, 680px);
+    width: min(62%, 740px);
+    margin-left: max(-64px, calc(50% - 50vw + 20px));
   }
 
   .hero :global(.hero-collage) {
@@ -207,7 +208,7 @@ const githubSnapshot = await getGithubSnapshot();
   h1 {
     display: grid;
     margin-bottom: 20px;
-    font-size: clamp(4.05rem, 6.7vw, 5.8rem);
+    font-size: clamp(4.4rem, 7.8vw, 7rem);
     letter-spacing: -0.075em;
   }
 
@@ -380,6 +381,7 @@ const githubSnapshot = await getGithubSnapshot();
     .hero-copy {
       width: auto;
       max-width: 720px;
+      margin-left: 0;
     }
 
     .hero-kicker {

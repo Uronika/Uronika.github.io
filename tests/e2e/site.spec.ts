@@ -38,6 +38,46 @@ test("home displays exactly six featured placeholders", async ({ page }) => {
   await expect(cards.first()).toContainText("待补充");
 });
 
+test("capability cards share aligned headings, bottom content, and the programming label", async ({ page }, testInfo) => {
+  await page.goto("/");
+
+  const cards = page.locator(".skill-card");
+  await expect(cards).toHaveCount(3);
+  expect(await cards.locator("h3").allTextContents()).toEqual(["编程开发", "游戏创作", "影像与视觉"]);
+  await expect(page.getByText("软件开发", { exact: true })).toHaveCount(0);
+
+  if (!testInfo.project.name.includes("mobile")) {
+    const metrics = await cards.evaluateAll((elements) =>
+      elements.map((element) => {
+        const card = element.getBoundingClientRect();
+        const number = element.querySelector<HTMLElement>(".skill-card__number")!.getBoundingClientRect();
+        const title = element.querySelector<HTMLElement>("h3")!.getBoundingClientRect();
+        const description = element.querySelector<HTMLElement>("p")!.getBoundingClientRect();
+        const footer = element.querySelector<HTMLElement>(".skill-card__footer")!.getBoundingClientRect();
+        const link = element.querySelector<HTMLElement>(".text-link")!.getBoundingClientRect();
+        return {
+          height: card.height,
+          titleTop: title.top,
+          titleInset: title.left - card.left,
+          linkBottom: link.bottom,
+          ordered: number.top < title.top && title.top < description.top && description.bottom < footer.top
+        };
+      })
+    );
+
+    const spread = (values: number[]) => Math.max(...values) - Math.min(...values);
+    expect(spread(metrics.map((item) => item.height))).toBeLessThan(2);
+    expect(spread(metrics.map((item) => item.titleTop))).toBeLessThan(2);
+    expect(spread(metrics.map((item) => item.titleInset))).toBeLessThan(2);
+    expect(spread(metrics.map((item) => item.linkBottom))).toBeLessThan(2);
+    expect(metrics.every((item) => item.ordered)).toBeTruthy();
+  }
+
+  await page.goto("/resume/");
+  await expect(page.getByRole("heading", { name: "编程开发" })).toBeVisible();
+  await expect(page.getByText("软件开发", { exact: true })).toHaveCount(0);
+});
+
 test("desktop home uses five snap sections and an active section navigator", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name.includes("mobile"), "Desktop-only section navigation");
   await page.goto("/");
@@ -74,6 +114,7 @@ test("desktop hero uses a full-screen curtain, wall light, and enlarged composit
     return {
       collageWidth: collageBox.width,
       overlap: copyBox.right - collageBox.left,
+      copyLeft: copyBox.left,
       copyZ: Number(getComputedStyle(copy).zIndex),
       collageZ: Number(getComputedStyle(collage).zIndex),
       titleFontSize: Number.parseFloat(getComputedStyle(title).fontSize),
@@ -92,7 +133,9 @@ test("desktop hero uses a full-screen curtain, wall light, and enlarged composit
 
   expect(composition.collageWidth).toBeGreaterThan(1_000);
   expect(composition.overlap).toBeGreaterThan(100);
-  expect(composition.titleFontSize).toBeGreaterThan(90);
+  expect(composition.titleFontSize).toBeGreaterThan(108);
+  expect(composition.copyLeft).toBeGreaterThanOrEqual(50);
+  expect(composition.copyLeft).toBeLessThanOrEqual(64);
   expect(composition.curtainWidth).toBeGreaterThanOrEqual(composition.viewportWidth - 1);
   expect(composition.curtainHeight).toBeGreaterThanOrEqual(composition.viewportHeight - 1);
   expect(composition.curtainBackground).toContain("linear-gradient");
@@ -188,13 +231,17 @@ test("mobile home keeps natural scrolling and the existing compact collage", asy
   const mobileHero = await page.evaluate(() => {
     const hero = document.querySelector<HTMLElement>("#home")!;
     const title = hero.querySelector<HTMLElement>("h1")!;
+    const copy = hero.querySelector<HTMLElement>(".hero-copy")!;
     return {
       titleFontSize: Number.parseFloat(getComputedStyle(title).fontSize),
+      copyLeft: copy.getBoundingClientRect().left,
       curtainDisplay: getComputedStyle(hero, "::after").display,
       spotlightOpacity: Number.parseFloat(getComputedStyle(hero, "::before").opacity)
     };
   });
   expect(mobileHero.titleFontSize).toBeLessThanOrEqual(68);
+  expect(mobileHero.copyLeft).toBeGreaterThanOrEqual(13);
+  expect(mobileHero.copyLeft).toBeLessThanOrEqual(20);
   expect(mobileHero.curtainDisplay).toBe("none");
   expect(mobileHero.spotlightOpacity).toBeGreaterThanOrEqual(0.59);
   expect(mobileHero.spotlightOpacity).toBeLessThanOrEqual(0.6);

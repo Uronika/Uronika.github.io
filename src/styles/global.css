@@ -789,20 +789,27 @@ h3 {
 }
 
 .skill-card__number {
-  margin-bottom: auto;
+  margin-bottom: 24px;
   color: var(--color-ember);
   font-family: var(--font-mono);
   font-size: 0.72rem;
 }
 
 .skill-card h3 {
-  margin-top: 70px;
+  margin-top: 0;
   margin-bottom: 12px;
   font-size: 1.65rem;
 }
 
 .skill-card p {
+  margin-bottom: 0;
   color: var(--color-muted);
+  font-size: 0.94rem;
+}
+
+.skill-card__footer {
+  padding-top: 32px;
+  margin-top: auto;
 }
 
 .skill-card .text-link {
