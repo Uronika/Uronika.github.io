@@ -11,6 +11,7 @@ const works = defineCollection({
     tags: z.array(z.string()).default([]),
     cover: z.string(),
     coverAlt: z.string(),
+    coverCaption: z.string().optional(),
     year: z.string(),
     status: z.string(),
     role: z.string(),

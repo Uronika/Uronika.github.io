@@ -1,7 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
-const routes = ["/", "/works/", "/resume/", "/contact/", "/works/development-01/"];
+const routes = ["/", "/works/", "/resume/", "/contact/", "/works/news-market-association-rag/"];
 
 test.describe("site shell", () => {
   for (const route of routes) {
@@ -31,11 +31,29 @@ test.describe("site shell", () => {
   });
 });
 
-test("home displays exactly six featured placeholders", async ({ page }) => {
+test("home keeps six featured works and leads with the real RAG project", async ({ page }) => {
   await page.goto("/");
   const cards = page.locator("#featured-works [data-work-card]");
   await expect(cards).toHaveCount(6);
-  await expect(cards.first()).toContainText("待补充");
+  await expect(cards.first()).toContainText("新闻舆情与行情异动 RAG");
+  await expect(cards.first()).toHaveAttribute("href", "/works/news-market-association-rag/");
+
+  const heroTile = page.locator("[data-parallax-item]").first();
+  await expect(heroTile).toHaveAttribute("href", "/works/news-market-association-rag/");
+  await expect(heroTile.locator("img")).toHaveAttribute("src", "/images/works/news-market-association-rag-cover.webp");
+});
+
+test("RAG project exposes its repository and original cover explanation", async ({ page }) => {
+  await page.goto("/works/news-market-association-rag/");
+  await expect(page.getByRole("heading", { level: 1, name: "新闻舆情与行情异动 RAG" })).toBeVisible();
+  await expect(page.locator(".work-cover figcaption")).toHaveText(
+    "原创概念封面：以新闻证据、行情异动窗口、关系图谱和风险守卫概括系统的关联解释流程。"
+  );
+  await expect(page.getByRole("link", { name: "查看仓库 ↗" })).toHaveAttribute(
+    "href",
+    "https://github.com/Uronika/news-market-association-rag"
+  );
+  await expect(page.locator(".repo-stats")).toContainText("Python");
 });
 
 test("capability cards share aligned headings, bottom content, and the programming label", async ({ page }, testInfo) => {
@@ -308,7 +326,7 @@ test("work filters expose all four categories", async ({ page }) => {
 });
 
 test("gallery opens as a keyboard-aware dialog", async ({ page }) => {
-  await page.goto("/works/development-01/");
+  await page.goto("/works/game-01/");
   await page.locator("[data-gallery-open]").first().click();
   const dialog = page.locator("[data-lightbox]");
   await expect(dialog).toBeVisible();

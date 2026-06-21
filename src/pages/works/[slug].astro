@@ -44,7 +44,7 @@ const creativeWorkSchema = {
 
     <figure class="work-cover glass">
       <img src={work.data.cover} alt={work.data.coverAlt} />
-      <figcaption>占位封面将在正式发布前替换为真实作品视觉。</figcaption>
+      <figcaption>{work.data.coverCaption ?? "占位封面将在正式发布前替换为真实作品视觉。"}</figcaption>
     </figure>
 
     <div class="work-facts glass">

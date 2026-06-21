@@ -1,6 +1,15 @@
 {
-  "generatedAt": null,
+  "generatedAt": "2026-06-21T14:20:36.3713709Z",
   "source": "fallback",
-  "repositories": {}
+  "repositories": {
+    "news-market-association-rag": {
+      "name": "news-market-association-rag",
+      "description": "新闻舆情与行情异动关联解释型 RAG：基于真实新闻、行情窗口、图谱增强和风险守卫的课程原型系统。",
+      "language": "Python",
+      "stars": 1,
+      "forks": 0,
+      "updatedAt": "2026-06-11T14:02:49Z",
+      "url": "https://github.com/Uronika/news-market-association-rag"
+    }
+  }
 }
-
