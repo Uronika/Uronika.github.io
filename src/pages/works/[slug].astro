@@ -248,6 +248,48 @@ const creativeWorkSchema = {
     line-height: 1.9;
   }
 
+  .prose :global(ul),
+  .prose :global(ol) {
+    display: grid;
+    gap: 14px;
+    padding-left: 1.35rem;
+    margin: 24px 0 38px;
+    color: #cfbfb7;
+  }
+
+  .prose :global(li) {
+    padding-left: 0.25rem;
+    line-height: 1.8;
+  }
+
+  .prose :global(li::marker) {
+    color: var(--color-ember);
+    font-family: var(--font-mono);
+    font-weight: 700;
+  }
+
+  .prose :global(strong) {
+    color: var(--color-text);
+  }
+
+  .prose :global(code) {
+    color: #ffae8c;
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    overflow-wrap: anywhere;
+  }
+
+  .prose :global(a) {
+    color: #ffae8c;
+    text-decoration: underline;
+    text-decoration-color: rgba(255, 174, 140, 0.5);
+    text-underline-offset: 0.22em;
+  }
+
+  .prose :global(a:hover) {
+    color: var(--color-text);
+  }
+
   .detail-section {
     padding-block: 80px;
     border-top: 1px solid var(--color-border);

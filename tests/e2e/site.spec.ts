@@ -43,7 +43,7 @@ test("home keeps six featured works and leads with the real RAG project", async 
   await expect(heroTile.locator("img")).toHaveAttribute("src", "/images/works/news-market-association-rag-cover.webp");
 });
 
-test("RAG project exposes its repository and original cover explanation", async ({ page }) => {
+test("RAG project exposes its architecture, repository, and original cover explanation", async ({ page }) => {
   await page.goto("/works/news-market-association-rag/");
   await expect(page.getByRole("heading", { level: 1, name: "新闻舆情与行情异动 RAG" })).toBeVisible();
   await expect(page.locator(".work-cover figcaption")).toHaveText(
@@ -54,6 +54,13 @@ test("RAG project exposes its repository and original cover explanation", async 
     "https://github.com/Uronika/news-market-association-rag"
   );
   await expect(page.locator(".repo-stats")).toContainText("Python");
+  for (const heading of ["架构与数据流", "关键工程取舍", "已知局限", "演进路线", "当前判断"]) {
+    await expect(page.getByRole("heading", { level: 2, name: heading })).toBeVisible();
+  }
+  await expect(page.getByRole("link", { name: "阅读完整技术拆解 ↗" })).toHaveAttribute(
+    "href",
+    "https://github.com/Uronika/news-market-association-rag/blob/main/docs/project_architecture_limitations_extensibility.md"
+  );
 });
 
 test("capability cards share aligned headings, bottom content, and the programming label", async ({ page }, testInfo) => {
