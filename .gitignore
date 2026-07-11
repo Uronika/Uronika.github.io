@@ -1,13 +1,3 @@
-node_modules/
-dist/
-.astro/
-.cache/
-test-results/
-playwright-report/
-.env
-.env.*
-!.env.example
-*.log
+# Static site — nothing to build
 .DS_Store
 Thumbs.db
-
