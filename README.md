@@ -63,9 +63,7 @@ python3 -m http.server 8080
 
 正式版本、完整改动说明与可恢复版本见 [GitHub Releases](https://github.com/Uronika/Uronika.github.io/releases)。
 
-## 本次对话概要（2026-07-11 ~ 2026-07-12）
-
-详细记录见 [notes/2026-07-12-redesign-v2-conversation.md](notes/2026-07-12-redesign-v2-conversation.md)。
+## 设计概要
 
 ### 背景
 用户认为旧版网站"AI 感太重"（深色熔岩橙玻璃拟态、视差拼贴、snap scroll 等均为 AI 生成高频模式），决定推倒重做。

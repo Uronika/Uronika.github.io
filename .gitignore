@@ -4,3 +4,6 @@ Thumbs.db
 
 # Internal tool files
 .reasonix/
+
+# Local notes (keep on disk, not in repo)
+notes/
