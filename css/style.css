@@ -16,8 +16,8 @@
   --color-border: #D9D4CD;
 
   /* Typography — geometric sans */
-  --font-sans: "Jost", "Noto Sans SC", system-ui, -apple-system, sans-serif;
-  --font-mono: "JetBrains Mono", "SF Mono", "Cascadia Code", monospace;
+  --font-sans: "Jost", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", "Cascadia Code", "Noto Sans SC", monospace;
 
   /* Type scale (1.25 minor third) */
   --text-xs: 0.75rem;    /* 12px */
@@ -73,6 +73,8 @@ body {
   font-size: var(--text-base);
   font-weight: 400;
   line-height: 1.6;
+  font-synthesis: none;
+  font-optical-sizing: auto;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -80,7 +82,7 @@ body {
 }
 
 /* Initial state for crossfade — hidden until JS fades in */
-body.loading main {
+html.is-loading main {
   opacity: 0;
 }
 
@@ -115,7 +117,7 @@ button {
 h1, h2, h3, h4, h5, h6 {
   font-weight: 400;
   line-height: 1.15;
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
 }
 
 p {
@@ -148,14 +150,14 @@ p {
 .text-display {
   font-size: var(--text-4xl);
   font-weight: 300;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.01em;
   line-height: 1.05;
 }
 
 .text-heading {
   font-size: var(--text-2xl);
   font-weight: 400;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.01em;
   line-height: 1.2;
 }
 
@@ -364,6 +366,15 @@ p {
   letter-spacing: 0.04em;
 }
 
+/* ----- Tag badge ----- */
+.tag-badge {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-faint);
+  border: 1px solid var(--color-border);
+  padding: 4px 10px;
+}
+
 /* ----- Work detail ----- */
 .work-detail {
   max-width: var(--content-width);
@@ -536,7 +547,7 @@ p {
 .home-intro__name {
   font-size: var(--text-3xl);
   font-weight: 300;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
   line-height: 1.05;
   margin-bottom: var(--space-2);
 }
@@ -586,7 +597,6 @@ p {
   border-bottom: 1px solid var(--color-border);
   font-size: var(--text-lg);
   font-weight: 400;
-  letter-spacing: -0.02em;
   transition: color var(--duration-fast) var(--ease-out);
 }
 
@@ -718,7 +728,7 @@ p {
     animation-iteration-count: 1 !important;
   }
 
-  body.loading main {
+  html.is-loading main {
     opacity: 1;
   }
 }
