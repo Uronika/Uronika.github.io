@@ -59,7 +59,79 @@
 
 ---
 
-## 模板
+## 2026-07-12 — HTML 闭合标签系统性缺失 `<`（共 113 处）
+
+### 现象
+修复编码问题后，页面上直接显示 `/span>`、`/a>`、`</a>`、`<<` 等原始字符。用户截图可见裸露的标签碎片。
+
+### 根因分析
+原始文件创建时，所有 HTML 闭合标签均误写为 `/tagname>` 而非 `</tagname>`——缺失开头的 `<`。具体模式：
+
+| 错误写法 | 正确写法 | 数量 |
+|---|---|---|
+| `/span>` | `</span>` | 70 |
+| `/a>` | `</a>` | 8 |
+| `/div>` | `</div>` | 6 |
+| `/p>` `/li>` `/h2>` `/h3>` 等 | `</p>` `</li>` ... | 29 |
+| **合计** | | **113** |
+
+此外，内容中还夹杂了 37 处 stray `<` 紧贴在闭合标签前（如 `精选作品<</span>` → 应为 `精选作品</span>`）。疑似写入时把 `</` 的 `<` 误放在了内容末，形成双 `<`。
+
+### 修复清单
+1. 第一轮：正则 `(?<!<)/(\w+)>` → `</\1>` 修复全部 `/tagname>` 模式（43 处）
+2. 第二轮：全局替换 `<</span>` `<< /a>` `<< /div>` 等去除 stray `<`（37 处）
+3. 最终验证：`<<` 零匹配、`/tag>` 零匹配、标签平衡。
+
+### 教训
+- **写完 HTML 后立即做标签平衡检查**。一行命令即可：`python3 -c "import re; from collections import Counter; ..."`
+- **正则匹配要注意子串误报**。`/span>` 是 `</span>` 的子串，审计时需用 `(?<!<)` 排除。
+- **分多轮修复不如一次性全扫**。closed 标签缺 `<` 应针对所有 HTML 标签做正则全局替换，而非逐个标签处理。
+
+---
+
+## 2026-07-12 — `write_file` 在 Windows 上以 GBK 写入，导致二次编码损毁
+
+### 现象
+用 `write_file` 重建 RAG 页面后，文件中的中文全部损坏。经检查，文件的实际字节为 GBK 编码，而非 UTF-8。
+
+### 根因分析
+`write_file` 工具在 Windows 上默认使用系统编码（GBK/CP936）写入文件，而非声明或自动检测为 UTF-8。重建 RAG 页面时，正确的 UTF-8 中文内容被以 GBK 编码写入，浏览器以 `charset="UTF-8"` 解析时全部乱码。
+
+此前 9 个文件的原始创建也可能经历了同样的过程——初始 v2 创建时的 `write_file` 调用了 GBK 写入，导致部分 3 字节 UTF-8 序列的第三字节变为 `0x3F`（?）。
+
+### 修复清单
+1. 用 Python `open(fn, 'r', encoding='gbk').read()` 读回 GBK 内容
+2. 再用 `open(fn, 'w', encoding='utf-8').write()` 以 UTF-8 写出
+3. 后续所有文件写入改用 `bash here-string → python3` 管道，显式指定 `encoding='utf-8'`
+
+### 教训
+- **Windows 上不要依赖 `write_file` 写入含中文的文件**。应使用 `python3 -c "open('f.html','w',encoding='utf-8').write(content)"` 或 `bash @'...'@ | python3` 显式指定编码。
+- **修改文件前后都要做 UTF-8 有效性校验**：`python3 -c "open('f.html','rb').read().decode('utf-8')"`。
+- **RAG 页面因字节级损坏过重，逐字节修复不可行**。正确的做法是直接重建整个文件。
+
+---
+
+## 2026-07-12 — PowerShell `>` 重定向吞噬 Python 字符串
+
+### 现象
+在 bash 中运行 `python3 -c "t.replace('/span>','</span>')"` 后，字符串中的 `>` 被 PowerShell 解释为重定向操作符，Python 代码被截断，替换静默失败。
+
+### 根因分析
+PowerShell 在解析命令行时，将未转义的 `>` 视为输出重定向，即使它在引号内。`python3 -c "t.replace('/span>','</span>')"` 中的 `/span>` 和 `</span>` 均包含 `>`，导致命令行被错误解析。
+
+### 修复清单
+改用 `bash` here-string 管道写法：
+```powershell
+@'
+import os
+...Python code with > chars...
+'@ | python3
+```
+或使用 `chr(62)` 替代字面量 `>`。
+
+### 教训
+- **在 PowerShell 中执行 Python one-liner 时，避免在代码中使用 `>` 和 `<`**。改用 here-string 管道或多行脚本文件。
+- **修复 `/tagname>` 这类模式时，注意 shell 转义问题**。不应在命令行中直接写 `>`。
 
 后续踩坑请按以下格式追加：
 
