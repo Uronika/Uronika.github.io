@@ -1,26 +1,26 @@
-# Uronika Personal Blog v2
+# Uronika Personal Blog v3
 
-Swiss modernist redesign — zero-build pure static site.
+Industrial Archive redesign — zero-build pure static site.
 
-- **v2 (redesign-v2 branch)** — current live version
+- **v3 (redesign-v2 branch)** — current live version · 工业档案风格
+- **v2** — Swiss modernist (see tag `backup/20260712-000000-before-redesign-v2`)
 - **v1 (main branch)** — original Astro build, preserved as archive
 
 ## 技术栈
 
-纯 HTML/CSS/JS，零构建步骤。Motion One (~3KB) 驱动跨页淡入淡出过渡，Google Fonts 加载 Jost + Noto Sans SC。
+纯 HTML/CSS，零构建、零 JS、零动画。Google Fonts 加载 Zilla Slab + Inter + Noto Sans SC。
 
 ## 项目结构
 
 ```text
 /
-├── index.html           首页 — 不对称网格摘要式
-├── resume.html          简历 — 时间线排版
-├── contact.html         联系 — 联系方式与社交平台
+├── index.html           首页 — A4 档案卡（身份 + 作品索引 + 简历摘要 + 联系）
+├── resume.html          简历 — A4 职业记录卡
+├── contact.html         联系 — A4 联系记录卡
 ├── works/
-│   ├── index.html       作品列表
-│   └── *.html           作品详情（6 个条目）
+│   ├── index.html       作品档案索引
+│   └── *.html           作品详情 · A4 卡片（6 个条目）
 ├── css/style.css        设计系统
-├── js/main.js           Crossfade 导航
 ├── favicon.svg
 └── robots.txt
 ```
@@ -53,7 +53,6 @@ python3 -m http.server 8080
 
 - 填写真实姓名、目标职位、简历、邮箱与公开账号
 - 为每个作品准备定制的截图与内容
-- 确定强调色（可通过 visual reference 出图后决定）
 
 ## License
 
@@ -65,31 +64,20 @@ python3 -m http.server 8080
 
 ## 设计概要
 
-### 背景
-用户认为旧版网站"AI 感太重"（深色熔岩橙玻璃拟态、视差拼贴、snap scroll 等均为 AI 生成高频模式），决定推倒重做。
+### v3 — 工业档案（当前）
+详见 [notes/design-v3-industrial-brutalist.md](notes/design-v3-industrial-brutalist.md)。
 
-### 设计决策
-通过多轮追问逐一敲定，不假设用户选择：
-- **动画哲学**：极简克制，仅 crossfade 淡入淡出 + 纯 CSS hover
-- **视觉风格**：瑞士现代主义 + 暖调纸张质感（#F7F3ED），取消全部圆角/阴影/模糊
-- **字体**：几何无衬线 Jost + Noto Sans SC
-- **首页**：单屏不对称 6 列网格（左侧身份，右侧作品入口+联系）
-- **子页**：作品列表 + 6 个详情 + 简历 + 联系
-- **技术栈**：从 Astro+TypeScript+pnpm 迁移至零构建纯静态 HTML/CSS/JS
-- **动效库**：Motion One ~3KB（SRI 校验），GSAP 被选中但实际选用更轻量的 Motion One
+- **动画哲学**：零动画，硬切换。移除 Motion One 依赖。
+- **视觉风格**：工业粗野主义 + A4 档案版式，报纸级高密度。
+- **配色**：灰白底 `#EBE7E0` + 纸白 `#FAFAF8` + 纯黑 `#111111`，酸性黄 `#E6FF00` 细节。
+- **字体**：Zilla Slab（标题） + Inter（正文） + Noto Sans SC。
+- **首页**：A4 档案卡，含身份、作品索引、简历摘要、联系索引。
+- **线条**：大量 2-4px 粗黑线作页框与分割。
 
-### 执行摘要
-1. 创建 `backup/20260712-000000-before-redesign-v2` 标签保护旧版基线
-2. 在 `redesign-v2` 分支清空旧版，建立纯静态目录
-3. 编写 14KB 瑞士现代主义 CSS 设计系统（tokens/typography/grid/4 breakpoints）
-4. 实现 Motion One crossfade 导航（离开 0.25s → 进入 0.35s）
-5. 构建 10 个 HTML 页面（首页 + 9 子页），RAG 技术拆解完整保留
-6. 安全审计通过（零 XSS 向量、零密钥暴露、CDN SRI 校验）
-7. 内部链接一致性交叉校验通过
+### v2 — 瑞士现代主义（已存档）
 
-### 待办
-- 强调色待 imagegen 出参考图后确定（占位 #C75146）
-- 个人信息仍为占位
-- 5 个作品条目仍为占位
-- GitHub Pages 需手动切换部署分支至 `redesign-v2`（从旧版 GitHub Actions 切到 Deploy from branch）
-- v2.0.0 Release 待手动创建（token 缺少 pages:write 权限）
+- 动画哲学：极简克制，仅 crossfade 淡入淡出 + 纯 CSS hover
+- 视觉风格：瑞士现代主义 + 暖调纸张质感（#F7F3ED），取消全部圆角/阴影/模糊
+- 字体：几何无衬线 Jost + Noto Sans SC
+- 首页：单屏不对称 6 列网格
+- 动效库：Motion One ~3KB（SRI 校验）
